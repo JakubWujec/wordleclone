@@ -13,9 +13,9 @@ type KeyboardProps = {
 }
 const Keyboard = (props: KeyboardProps) => {
   const keyboardRows = [
-    ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-    ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-    ['enter', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'back'],
+    ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'].map(l => l.toUpperCase()),
+    ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'].map(l => l.toUpperCase()),
+    ['enter', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'back'].map(l => l.toUpperCase()),
   ]
 
   return (
