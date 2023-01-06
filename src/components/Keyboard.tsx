@@ -7,6 +7,15 @@ const KeyboardKey = (props: KeyboardKeyProps) => {
   return <button className="p-4 m-1 bg-slate-300" onClick={props.onClick} data-value={props.char}>{props.char}</button>
 }
 
+type KeyboardRowProps = {
+  children: any
+}
+
+const KeyboardRow = (props: KeyboardRowProps) => {
+  return <div>
+    {props.children}
+  </div>
+}
 
 type KeyboardProps = {
   onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
@@ -21,9 +30,9 @@ const Keyboard = (props: KeyboardProps) => {
   return (
     <div>
       {keyboardRows.map((keyboardRow, index) => {
-        return <div key={index}>
+        return <KeyboardRow key={index}>
           {keyboardRow.map(char => { return <KeyboardKey key={char} char={char} onClick={props.onClick}></KeyboardKey> })}
-        </div>
+        </KeyboardRow>
       })}
     </div>
   )
