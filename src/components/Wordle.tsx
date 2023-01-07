@@ -1,9 +1,11 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Keyboard from "./Keyboard";
-import Tile from "./Tile";
+import Tile from "./Tiles/Tile";
 
 const ROWS = 6;
 const COLUMNS = 5;
+const ENTER = "ENTER"
+const BACKSPACE = "BACKSPACE"
 
 function getEmptyState() {
   let s = [];
@@ -18,6 +20,36 @@ const Wordle = () => {
   const [boardRows, setBoardRows] = useState<string[][]>(getEmptyState());
   const [[currentRow, currentColumn], setCurrentPosition] = useState([0, 0])
 
+  const handleKeyboardInput = (val: string) => {
+    if (val === 'ENTER') {
+      if (!boardRows[currentRow].some(l => l === '')) {
+        moveToNextRow();
+      }
+
+    }
+    else if (val === 'BACKSPACE') {
+      let board = copyBoard(boardRows);
+      board[currentRow][currentColumn] = '';
+      setBoardRows(board);
+      moveToPreviousColumn();
+    } else if (val.length === 1 && val.match(/[A-Z]{1}/)) {
+      writeIfEmpty(currentRow, currentColumn, val);
+      moveToNextColumn();
+    }
+  }
+
+  useEffect(() => {
+    function handleKeyDown(evt: KeyboardEvent) {
+      handleKeyboardInput(evt.key.toUpperCase())
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Don't forget to clean up
+    return function cleanup() {
+      document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [handleKeyboardInput]);
 
   function copyBoard(boardRows: string[][]) {
     return boardRows.map(row => [...row])
@@ -41,25 +73,17 @@ const Wordle = () => {
     }
   }
 
+  function writeIfEmpty(row: number, column: number, char: string) {
+    let board = copyBoard(boardRows);
+    if (board[row][column] === '') {
+      board[row][column] = char;
+    }
+    setBoardRows(board);
+  }
+
   const keyboardClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     let val = event.target.dataset.value;
-    if (val === 'ENTER') {
-      if (!boardRows[currentRow].some(l => l === '')) {
-        moveToNextRow();
-      }
-
-    }
-    else if (val === 'BACK') {
-      let board = copyBoard(boardRows);
-      board[currentRow][currentColumn] = '';
-      setBoardRows(board);
-      moveToPreviousColumn();
-    } else {
-      let board = copyBoard(boardRows);
-      moveToNextColumn();
-      board[currentRow][currentColumn] = val;
-      setBoardRows(board);
-    }
+    handleKeyboardInput(val);
   }
 
   return (
