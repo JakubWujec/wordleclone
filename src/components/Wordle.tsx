@@ -91,7 +91,9 @@ const Wordle = () => {
       <div className="w-84 grid grid-rows-6 gap-1">
         {boardRows.map((boardRow, rowIndex) => {
           return <div key={rowIndex} className="grid grid-cols-5 gap-1">
-            {boardRow.map((char, columnIndex) => { return <Tile key={`${rowIndex}-${columnIndex}`} char={char}></Tile> })}
+            {boardRow.map((char, columnIndex) => {
+              return <Tile key={`${rowIndex}-${columnIndex}`} char={char}></Tile>
+            })}
           </div>
         })}
       </div>
