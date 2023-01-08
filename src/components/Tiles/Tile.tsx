@@ -4,7 +4,7 @@ type TileProps = {
 }
 
 const Tile = (props: TileProps) => {
-  let tileState = props.state ?? "UNCHECKED"
+  let tileState = props.state ?? "EMPTY"
 
   if (tileState === "UNCHECKED" && props.char !== '') {
     return (
@@ -14,7 +14,7 @@ const Tile = (props: TileProps) => {
     )
   }
 
-  if (tileState === "UNCHECKED" && props.char === '') {
+  if (tileState === "EMPTY") {
     return (
       <div className="w-12 h-12 border-2 flex justify-center items-center font-bold text-xl">
         {props.char}
@@ -23,8 +23,6 @@ const Tile = (props: TileProps) => {
   }
 
   return null;
-
-
 }
 
 export default Tile;

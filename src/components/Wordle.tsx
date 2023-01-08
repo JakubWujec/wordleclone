@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import Keyboard from "./Keyboard";
 import Tile from "./Tiles/Tile";
 
@@ -20,10 +20,18 @@ const Wordle = () => {
   const [boardRows, setBoardRows] = useState<string[][]>(getEmptyState());
   const [[currentRow, currentColumn], setCurrentPosition] = useState([0, 0])
 
+  const usedLetters = useMemo(() => getUsedLettersSet(), [currentRow]);
+  console.log(usedLetters);
+
+
+  function getUsedLettersSet() {
+    return new Set(boardRows.filter((row, index) => index < currentRow).flat().filter(char => char !== ''))
+  }
+
   const handleKeyboardInput = (val: string) => {
     if (val === 'ENTER') {
       if (!boardRows[currentRow].some(l => l === '')) {
-        moveToNextRow();
+        checkRow();
       }
 
     }
@@ -81,6 +89,19 @@ const Wordle = () => {
     setBoardRows(board);
   }
 
+  function checkRow() {
+    let guess = boardRows[currentRow].join('');
+    if (guess === CORRECT_WORD) {
+      endGame();
+    } else {
+      moveToNextRow();
+    }
+  }
+
+  function endGame() {
+    alert("Game finished")
+  }
+
   const keyboardClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     let val = event.target.dataset.value;
     handleKeyboardInput(val);
@@ -92,7 +113,7 @@ const Wordle = () => {
         {boardRows.map((boardRow, rowIndex) => {
           return <div key={rowIndex} className="grid grid-cols-5 gap-1">
             {boardRow.map((char, columnIndex) => {
-              return <Tile key={`${rowIndex}-${columnIndex}`} char={char}></Tile>
+              return <Tile state={(rowIndex === currentRow && char !== '') ? "UNCHECKED" : "EMPTY"} key={`${rowIndex}-${columnIndex}`} char={char}></Tile>
             })}
           </div>
         })}
