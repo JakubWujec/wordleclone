@@ -1,12 +1,3 @@
-type KeyboardKeyProps = {
-  char: string
-  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
-}
-
-const KeyboardKey = (props: KeyboardKeyProps) => {
-  return <button className="p-4 m-1 bg-slate-300" onClick={props.onClick} data-value={props.char}>{props.char}</button>
-}
-
 type KeyboardRowProps = {
   children: any
 }
@@ -18,7 +9,9 @@ const KeyboardRow = (props: KeyboardRowProps) => {
 }
 
 type KeyboardProps = {
-  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
+  usedLetters: Set<string>
+  foundLetters: Set<string>
 }
 const Keyboard = (props: KeyboardProps) => {
   const keyboardRows = [
@@ -27,11 +20,26 @@ const Keyboard = (props: KeyboardProps) => {
     ['enter', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'BACKSPACE'].map(l => l.toUpperCase()),
   ]
 
+  function getKeyColor(char: string) {
+    if (props.foundLetters.has(char)) {
+      return 'bg-lime-500'
+    }
+    if (props.usedLetters.has(char)) {
+      return 'bg-slate-600'
+    }
+    return 'bg-slate-300'
+  }
+
+
   return (
     <div>
       {keyboardRows.map((keyboardRow, index) => {
         return <KeyboardRow key={index}>
-          {keyboardRow.map(char => { return <KeyboardKey key={char} char={char} onClick={props.onClick}></KeyboardKey> })}
+          {keyboardRow.map(char => {
+            const keyColor = getKeyColor(char)
+            return <button className={`p-4 m-1 ${keyColor}`} onClick={props.onClick} data-value={char}>{char}
+            </button>
+          })}
         </KeyboardRow>
       })}
     </div>
