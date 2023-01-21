@@ -32,21 +32,7 @@ const Wordle = () => {
   // const correctWordMap = useMemo(() => )
   const usedChars = useMemo(() => getUsedChars(), [currentRow]);
   const correctChars = useMemo(() => getCorrectChars(), [currentRow]);
-
-  function isRowFullyFilled(rowIndex: number) {
-    return !boardRows[rowIndex].some(boardCell => boardCell.char === EMPTY_CHAR)
-  }
-
-  function getUsedChars() {
-    let usedChars = boardRows.reduce((acc, currentRow) => {
-      return acc + currentRow.map(cell => cell.char).filter(char => char !== EMPTY_CHAR).join('')
-    }, '')
-    return new Set(usedChars);
-  }
-
-  function getCorrectChars() {
-    return new Set([...getUsedChars()].filter((x) => new Set(CORRECT_WORD).has(x)))
-  }
+  const misplacedChars = useMemo(() => getMisplacedChars(), [currentRow]);
 
   const handleKeyboardInput = (val: string) => {
     if (val === 'ENTER') {
@@ -66,12 +52,6 @@ const Wordle = () => {
     }
   }
 
-  const setRow = (row: BoardCell[], rowIndex: number) => {
-    let board = copyBoard(boardRows);
-    board[rowIndex] = row;
-    setBoardRows(board);
-  }
-
   useEffect(() => {
     function handleKeyDown(evt: KeyboardEvent) {
       handleKeyboardInput(evt.key.toUpperCase())
@@ -87,6 +67,39 @@ const Wordle = () => {
 
   function copyBoard(boardRows: BoardCell[][]) {
     return boardRows.map(row => [...row])
+  }
+
+  function isRowFullyFilled(rowIndex: number) {
+    return !boardRows[rowIndex].some(boardCell => boardCell.char === EMPTY_CHAR)
+  }
+
+  function getUsedChars() {
+    let usedChars = boardRows.reduce((acc, currentRow) => {
+      return acc + currentRow.map(cell => cell.char).filter(char => char !== EMPTY_CHAR).join('')
+    }, '')
+    return new Set(usedChars);
+  }
+
+  function getCorrectChars() {
+    let correctChars = boardRows.reduce((acc, currentRow) => {
+      return acc + currentRow.filter(cell => cell.state === 'CORRECT').map(cell => cell.char).filter(char => char !== EMPTY_CHAR).join('')
+    }, '')
+    return new Set(correctChars)
+  }
+
+  function getMisplacedChars() {
+    let misplacedChars = boardRows.reduce((acc, currentRow) => {
+      return acc + currentRow.filter(cell => cell.state === 'MISPLACED').map(cell => cell.char).filter(char => char !== EMPTY_CHAR).join('')
+    }, '')
+    console.log(misplacedChars, correctChars, new Set([...misplacedChars].filter((char) => !getCorrectChars().has(char))))
+
+    return new Set([...misplacedChars].filter((char) => !getCorrectChars().has(char)))
+  }
+
+  const setRow = (row: BoardCell[], rowIndex: number) => {
+    let board = copyBoard(boardRows);
+    board[rowIndex] = row;
+    setBoardRows(board);
   }
 
   function moveToPreviousColumn() {
@@ -172,7 +185,7 @@ const Wordle = () => {
           </div>
         })}
       </div>
-      <Keyboard onClick={keyboardClickHandler} usedChars={usedChars} foundChars={correctChars}></Keyboard>
+      <Keyboard onClick={keyboardClickHandler} misplacedChars={misplacedChars} usedChars={usedChars} correctChars={correctChars}></Keyboard>
     </div>
   )
 }

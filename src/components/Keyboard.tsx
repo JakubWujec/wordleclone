@@ -11,7 +11,8 @@ const KeyboardRow = (props: KeyboardRowProps) => {
 type KeyboardProps = {
   onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
   usedChars: Set<string>
-  foundChars: Set<string>
+  correctChars: Set<string>
+  misplacedChars: Set<string>
 }
 const Keyboard = (props: KeyboardProps) => {
   const keyboardRows = [
@@ -20,9 +21,13 @@ const Keyboard = (props: KeyboardProps) => {
     ['enter', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'BACKSPACE'].map(l => l.toUpperCase()),
   ]
 
+
   function getKeyColor(char: string) {
-    if (props.foundChars.has(char)) {
+    if (props.correctChars.has(char)) {
       return 'bg-lime-500'
+    }
+    if (props.misplacedChars.has(char)) {
+      return 'bg-yellow-300'
     }
     if (props.usedChars.has(char)) {
       return 'bg-slate-600'
