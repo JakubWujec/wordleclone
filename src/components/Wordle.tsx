@@ -30,40 +30,22 @@ const Wordle = () => {
   const [[currentRow, currentColumn], setCurrentPosition] = useState([0, 0])
 
   // const correctWordMap = useMemo(() => )
-  const usedLettersMap = useMemo(() => getUsedLettersMap(), [currentRow]);
+  const usedLetters = useMemo(() => getUsedLetters(), [currentRow]);
   const correctLetters = useMemo(() => getCorrectLetters(), [currentRow]);
 
   function isRowFullyFilled(rowIndex: number) {
     return !boardRows[rowIndex].some(boardCell => boardCell.char === EMPTY_CHAR)
   }
 
-
-  function getUsedLettersMap() {
-    let m = new Map<string, number[]>();
-    for (let row of boardRows) {
-      for (let i = 0; i < row.length; i++) {
-        if (!m.has(row[i].char)) {
-          m.set(row[i].char, [i])
-        } else {
-          if (!m.get(row[i].char)?.includes(i)) {
-            m.get(row[i].char)?.push(i);
-          }
-        }
-      }
-    }
-    return m;
+  function getUsedLetters() {
+    let usedLetters = boardRows.reduce((acc, currentRow) => {
+      return acc + currentRow.map(cell => cell.char).filter(char => char !== EMPTY_CHAR).join('')
+    }, '')
+    return new Set(usedLetters);
   }
 
   function getCorrectLetters() {
-    let foundLetters = new Set<string>();
-    for (let row of boardRows) {
-      for (let boardCell of row) {
-        if (CORRECT_WORD.indexOf(boardCell.char) >= 0) {
-          foundLetters.add(boardCell.char)
-        }
-      }
-    }
-    return foundLetters;
+    return new Set([...getUsedLetters()].filter((x) => new Set(CORRECT_WORD).has(x)))
   }
 
   const handleKeyboardInput = (val: string) => {
@@ -73,9 +55,7 @@ const Wordle = () => {
         setRow(checkedRow, currentRow);
         moveToNextRow();
       }
-
-    }
-    else if (val === 'BACKSPACE') {
+    } else if (val === 'BACKSPACE') {
       let board = copyBoard(boardRows);
       board[currentRow][currentColumn] = { char: EMPTY_CHAR, state: "WRONG" };
       setBoardRows(board);
@@ -99,7 +79,7 @@ const Wordle = () => {
 
     document.addEventListener('keydown', handleKeyDown);
 
-    // Don't forget to clean up
+    // cleanup
     return function cleanup() {
       document.removeEventListener('keydown', handleKeyDown);
     }
@@ -192,7 +172,7 @@ const Wordle = () => {
           </div>
         })}
       </div>
-      <Keyboard onClick={keyboardClickHandler} usedLetters={new Set(usedLettersMap.keys())} foundLetters={correctLetters}></Keyboard>
+      <Keyboard onClick={keyboardClickHandler} usedLetters={usedLetters} foundLetters={correctLetters}></Keyboard>
     </div>
   )
 }
