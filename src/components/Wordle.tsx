@@ -30,7 +30,6 @@ const Wordle = () => {
   const [boardRows, setBoardRows] = useState<BoardCell[][]>(getEmptyState());
   const [[currentRow, currentColumn], setCurrentPosition] = useState([0, 0])
 
-  // const correctWordMap = useMemo(() => )
   const usedChars = useMemo(() => getUsedChars(), [currentRow]);
   const correctChars = useMemo(() => getCorrectChars(), [currentRow]);
   const misplacedChars = useMemo(() => getMisplacedChars(), [currentRow]);
@@ -89,12 +88,6 @@ const Wordle = () => {
     return new Set([...misplacedChars].filter((char) => !getCorrectChars().has(char)))
   }
 
-  const setRow = (row: BoardCell[], rowIndex: number) => {
-    let board = copyBoard(boardRows);
-    board[rowIndex] = row;
-    setBoardRows(board);
-  }
-
   function moveToNextRow() {
     if (currentRow + 1 < ROWS) {
       setCurrentPosition([currentRow + 1, 0])
@@ -103,8 +96,10 @@ const Wordle = () => {
 
   function handleEnter() {
     if (isRowFullyFilled(currentRow)) {
-      let checkedRow = checkRow(boardRows[currentRow].map(cell => cell.char).join(''), CORRECT_WORD);
-      setRow(checkedRow, currentRow);
+      let board = copyBoard(boardRows);
+      let checkedRow = checkRow(board[currentRow].map(cell => cell.char).join(''), CORRECT_WORD);
+      board[currentRow] = checkedRow;
+      setBoardRows(board);
       moveToNextRow();
     }
   }
