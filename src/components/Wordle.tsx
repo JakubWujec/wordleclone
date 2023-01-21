@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react"
+import { findLastIndex } from "../utils/utils";
 import Keyboard from "./Keyboard";
 import Cell from "./Tiles/Tile";
 
@@ -36,19 +37,11 @@ const Wordle = () => {
 
   const handleKeyboardInput = (val: string) => {
     if (val === 'ENTER') {
-      if (isRowFullyFilled(currentRow)) {
-        let checkedRow = checkRow(boardRows[currentRow].map(cell => cell.char).join(''), CORRECT_WORD);
-        setRow(checkedRow, currentRow);
-        moveToNextRow();
-      }
+      handleEnter();
     } else if (val === 'BACKSPACE') {
-      let board = copyBoard(boardRows);
-      board[currentRow][currentColumn] = { char: EMPTY_CHAR, state: "WRONG" };
-      setBoardRows(board);
-      moveToPreviousColumn();
+      handleBackspace();
     } else if (val.length === 1 && val.match(/[A-Z]{1}/)) {
-      writeIfEmpty(currentRow, currentColumn, val as string);
-      moveToNextColumn();
+      writeIfPossible(val as string);
     }
   }
 
@@ -102,28 +95,32 @@ const Wordle = () => {
     setBoardRows(board);
   }
 
-  function moveToPreviousColumn() {
-    if (currentColumn !== 0) {
-      setCurrentPosition([currentRow, Math.max(0, currentColumn - 1)])
-    }
-  }
-
-  function moveToNextColumn() {
-    if (currentColumn !== COLUMNS - 1) {
-      setCurrentPosition([currentRow, Math.min(COLUMNS - 1, currentColumn + 1)])
-    }
-  }
-
   function moveToNextRow() {
     if (currentRow + 1 < ROWS) {
       setCurrentPosition([currentRow + 1, 0])
     }
   }
 
-  function writeIfEmpty(row: number, column: number, char: string) {
+  function handleEnter() {
+    if (isRowFullyFilled(currentRow)) {
+      let checkedRow = checkRow(boardRows[currentRow].map(cell => cell.char).join(''), CORRECT_WORD);
+      setRow(checkedRow, currentRow);
+      moveToNextRow();
+    }
+  }
+
+  function handleBackspace() {
     let board = copyBoard(boardRows);
-    if (board[row][column].char === EMPTY_CHAR) {
-      board[row][column] = {
+    let lastFilledColumnIndex = findLastIndex(board[currentRow], item => item.char !== EMPTY_CHAR)
+    board[currentRow][lastFilledColumnIndex] = { char: EMPTY_CHAR, state: "WRONG" };
+    setBoardRows(board);
+  }
+
+  function writeIfPossible(char: string) {
+    let board = copyBoard(boardRows);
+    let lastFilledColumnIndex = findLastIndex(board[currentRow], item => item.char !== EMPTY_CHAR)
+    if (lastFilledColumnIndex + 1 < COLUMNS) {
+      board[currentRow][lastFilledColumnIndex + 1] = {
         char: char,
         state: 'WRONG'
       }
