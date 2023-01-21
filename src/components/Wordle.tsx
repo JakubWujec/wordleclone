@@ -4,14 +4,10 @@ import Tile from "./Tiles/Tile";
 
 const ROWS = 6;
 const COLUMNS = 5;
-const ENTER = "ENTER"
-const BACKSPACE = "BACKSPACE"
-const EMPTY_LETTER = ''
-
-type CapitalLetter = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z';
+export const EMPTY_CHAR = '_'
 
 type BoardCell = {
-  letter: CapitalLetter | ''
+  char: string;
   state: 'WRONG' | 'MISPLACED' | 'CORRECT'
 }
 
@@ -19,7 +15,7 @@ function getEmptyState(): BoardCell[][] {
   let s = [];
   for (let i = 0; i < ROWS; i++) {
     s.push(new Array(COLUMNS).fill({
-      letter: '',
+      char: EMPTY_CHAR,
       state: 'WRONG'
     }))
   }
@@ -36,31 +32,19 @@ const Wordle = () => {
   const correctLetters = useMemo(() => getCorrectLetters(), [currentRow]);
 
   function isRowFullyFilled(rowIndex: number) {
-    return !boardRows[rowIndex].some(boardCell => boardCell.letter === '')
+    return !boardRows[rowIndex].some(boardCell => boardCell.char === EMPTY_CHAR)
   }
 
-  function getWordMap(word: string) {
-    let m = new Map<string, number[]>();
-    word.split('').forEach((letter, index) => {
-      if (!m.has(letter)) {
-        m.set(letter, [index]);
-      } else {
-        m.get(letter)?.push(index);
-      }
-    })
-    return m;
-
-  }
 
   function getUsedLettersMap() {
     let m = new Map<string, number[]>();
     for (let row of boardRows) {
       for (let i = 0; i < row.length; i++) {
-        if (!m.has(row[i].letter)) {
-          m.set(row[i].letter, [i])
+        if (!m.has(row[i].char)) {
+          m.set(row[i].char, [i])
         } else {
-          if (!m.get(row[i].letter)?.includes(i)) {
-            m.get(row[i].letter)?.push(i);
+          if (!m.get(row[i].char)?.includes(i)) {
+            m.get(row[i].char)?.push(i);
           }
         }
       }
@@ -72,8 +56,8 @@ const Wordle = () => {
     let foundLetters = new Set<string>();
     for (let row of boardRows) {
       for (let boardCell of row) {
-        if (CORRECT_WORD.indexOf(boardCell.letter) >= 0) {
-          foundLetters.add(boardCell.letter)
+        if (CORRECT_WORD.indexOf(boardCell.char) >= 0) {
+          foundLetters.add(boardCell.char)
         }
       }
     }
@@ -83,7 +67,7 @@ const Wordle = () => {
   const handleKeyboardInput = (val: string) => {
     if (val === 'ENTER') {
       if (isRowFullyFilled(currentRow)) {
-        let checkedRow = checkRow(boardRows[currentRow].map(cell => cell.letter).join(''), CORRECT_WORD);
+        let checkedRow = checkRow(boardRows[currentRow].map(cell => cell.char).join(''), CORRECT_WORD);
         setRow(checkedRow, currentRow);
         moveToNextRow();
       }
@@ -91,11 +75,11 @@ const Wordle = () => {
     }
     else if (val === 'BACKSPACE') {
       let board = copyBoard(boardRows);
-      board[currentRow][currentColumn] = { letter: '', state: "WRONG" };
+      board[currentRow][currentColumn] = { char: EMPTY_CHAR, state: "WRONG" };
       setBoardRows(board);
       moveToPreviousColumn();
     } else if (val.length === 1 && val.match(/[A-Z]{1}/)) {
-      writeIfEmpty(currentRow, currentColumn, val as CapitalLetter);
+      writeIfEmpty(currentRow, currentColumn, val as string);
       moveToNextColumn();
     }
   }
@@ -141,11 +125,12 @@ const Wordle = () => {
     }
   }
 
-  function writeIfEmpty(row: number, column: number, char: CapitalLetter | '') {
+  function writeIfEmpty(row: number, column: number, char: string) {
     let board = copyBoard(boardRows);
-    if (board[row][column].letter === '') {
+    console.log(row, column, char)
+    if (board[row][column].char === EMPTY_CHAR) {
       board[row][column] = {
-        letter: char,
+        char: char,
         state: 'WRONG'
       }
     }
@@ -155,10 +140,10 @@ const Wordle = () => {
   function checkRow(guess: string, correct: string): BoardCell[] {
     let indexToLetterGuess = new Map<number, string>();
     let indexToLetterCorrect = new Map<number, string>();
-    let resultRow = guess.split('').map(letter => { return { letter: letter, state: 'WRONG' } as BoardCell })
+    let resultRow = guess.split('').map(letter => { return { char: letter, state: 'WRONG' } as BoardCell })
     for (let index = 0; index < guess.length; index++) {
       indexToLetterCorrect.set(index, correct[index]);
-      indexToLetterGuess.set(index, correct[index]);
+      indexToLetterGuess.set(index, guess[index]);
     }
 
     // correct letters
@@ -201,7 +186,7 @@ const Wordle = () => {
         {boardRows.map((boardRow, rowIndex) => {
           return <div key={rowIndex} className="grid grid-cols-5 gap-1">
             {boardRow.map((boardCell, columnIndex) => {
-              return <Tile state={(rowIndex === currentRow && boardCell.letter !== '') ? "UNCHECKED" : "EMPTY"} key={`${rowIndex}-${columnIndex}`} char={boardCell.letter}></Tile>
+              return <Tile state={boardCell.state} key={`${rowIndex}-${columnIndex}`} char={boardCell.char}></Tile>
             })}
           </div>
         })}
