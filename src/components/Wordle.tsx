@@ -30,22 +30,22 @@ const Wordle = () => {
   const [[currentRow, currentColumn], setCurrentPosition] = useState([0, 0])
 
   // const correctWordMap = useMemo(() => )
-  const usedLetters = useMemo(() => getUsedLetters(), [currentRow]);
-  const correctLetters = useMemo(() => getCorrectLetters(), [currentRow]);
+  const usedChars = useMemo(() => getUsedChars(), [currentRow]);
+  const correctChars = useMemo(() => getCorrectChars(), [currentRow]);
 
   function isRowFullyFilled(rowIndex: number) {
     return !boardRows[rowIndex].some(boardCell => boardCell.char === EMPTY_CHAR)
   }
 
-  function getUsedLetters() {
-    let usedLetters = boardRows.reduce((acc, currentRow) => {
+  function getUsedChars() {
+    let usedChars = boardRows.reduce((acc, currentRow) => {
       return acc + currentRow.map(cell => cell.char).filter(char => char !== EMPTY_CHAR).join('')
     }, '')
-    return new Set(usedLetters);
+    return new Set(usedChars);
   }
 
-  function getCorrectLetters() {
-    return new Set([...getUsedLetters()].filter((x) => new Set(CORRECT_WORD).has(x)))
+  function getCorrectChars() {
+    return new Set([...getUsedChars()].filter((x) => new Set(CORRECT_WORD).has(x)))
   }
 
   const handleKeyboardInput = (val: string) => {
@@ -119,34 +119,34 @@ const Wordle = () => {
   }
 
   function checkRow(guess: string, correct: string): BoardCell[] {
-    let indexToLetterGuess = new Map<number, string>();
-    let indexToLetterCorrect = new Map<number, string>();
-    let resultRow = guess.split('').map(letter => { return { char: letter, state: 'WRONG' } as BoardCell })
+    let indexToCharGuess = new Map<number, string>();
+    let indexToCharCorrect = new Map<number, string>();
+    let resultRow = guess.split('').map(char => { return { char: char, state: 'WRONG' } as BoardCell })
     for (let index = 0; index < guess.length; index++) {
-      indexToLetterCorrect.set(index, correct[index]);
-      indexToLetterGuess.set(index, guess[index]);
+      indexToCharCorrect.set(index, correct[index]);
+      indexToCharGuess.set(index, guess[index]);
     }
 
-    // correct letters
+    // correct chars
     for (let i = 0; i < guess.length; i++) {
       if (guess[i] === correct[i]) {
         resultRow[i].state = 'CORRECT'
-        indexToLetterGuess.delete(i);
-        indexToLetterCorrect.delete(i);
+        indexToCharGuess.delete(i);
+        indexToCharCorrect.delete(i);
       }
     }
     // misplaced
-    for (let [index, letter] of indexToLetterGuess.entries()) {
+    for (let [index, char] of indexToCharGuess.entries()) {
       let index2ToDelete = null;
-      for (let [index2, letter2] of indexToLetterCorrect.entries()) {
-        if (letter === letter2) {
+      for (let [index2, char2] of indexToCharCorrect.entries()) {
+        if (char === char2) {
           resultRow[index].state = 'MISPLACED';
           index2ToDelete = index2
           break;
         }
       }
       if (index2ToDelete !== null) {
-        indexToLetterCorrect.delete(index2ToDelete);
+        indexToCharCorrect.delete(index2ToDelete);
       }
     }
     return resultRow;
@@ -172,7 +172,7 @@ const Wordle = () => {
           </div>
         })}
       </div>
-      <Keyboard onClick={keyboardClickHandler} usedLetters={usedLetters} foundLetters={correctLetters}></Keyboard>
+      <Keyboard onClick={keyboardClickHandler} usedChars={usedChars} foundChars={correctChars}></Keyboard>
     </div>
   )
 }
