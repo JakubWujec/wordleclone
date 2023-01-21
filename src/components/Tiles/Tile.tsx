@@ -1,11 +1,11 @@
-import { EMPTY_CHAR } from "../Wordle";
+import { CellState, EMPTY_CHAR } from "../Wordle";
 
-type TileProps = {
+type CellProps = {
   char: string;
-  state?: "WRONG" | "MISPLACED" | "CORRECT"
+  state?: CellState
 }
 
-const Tile = (props: TileProps) => {
+const Cell = (props: CellProps) => {
   let tileState = props.state ?? "WRONG"
 
   if (props.char === EMPTY_CHAR) {
@@ -50,4 +50,4 @@ const Tile = (props: TileProps) => {
 
 }
 
-export default Tile;
+export default Cell;

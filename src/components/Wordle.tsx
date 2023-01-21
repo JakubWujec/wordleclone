@@ -1,14 +1,16 @@
 import { useState, useEffect, useMemo } from "react"
 import Keyboard from "./Keyboard";
-import Tile from "./Tiles/Tile";
+import Cell from "./Tiles/Tile";
 
 const ROWS = 6;
 const COLUMNS = 5;
 export const EMPTY_CHAR = '_'
 
+export type CellState = 'WRONG' | 'MISPLACED' | 'CORRECT'
+
 type BoardCell = {
   char: string;
-  state: 'WRONG' | 'MISPLACED' | 'CORRECT'
+  state: CellState
 }
 
 function getEmptyState(): BoardCell[][] {
@@ -186,7 +188,7 @@ const Wordle = () => {
         {boardRows.map((boardRow, rowIndex) => {
           return <div key={rowIndex} className="grid grid-cols-5 gap-1">
             {boardRow.map((boardCell, columnIndex) => {
-              return <Tile state={boardCell.state} key={`${rowIndex}-${columnIndex}`} char={boardCell.char}></Tile>
+              return <Cell state={boardCell.state} key={`${rowIndex}-${columnIndex}`} char={boardCell.char}></Cell>
             })}
           </div>
         })}
