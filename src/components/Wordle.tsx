@@ -129,7 +129,6 @@ const Wordle = () => {
 
   function writeIfEmpty(row: number, column: number, char: string) {
     let board = copyBoard(boardRows);
-    console.log(row, column, char)
     if (board[row][column].char === EMPTY_CHAR) {
       board[row][column] = {
         char: char,
