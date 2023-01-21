@@ -35,6 +35,10 @@ const Wordle = () => {
   const usedLettersMap = useMemo(() => getUsedLettersMap(), [currentRow]);
   const correctLetters = useMemo(() => getCorrectLetters(), [currentRow]);
 
+  function isRowFullyFilled(rowIndex: number) {
+    return !boardRows[rowIndex].some(boardCell => boardCell.letter === '')
+  }
+
   function getWordMap(word: string) {
     let m = new Map<string, number[]>();
     word.split('').forEach((letter, index) => {
@@ -78,7 +82,7 @@ const Wordle = () => {
 
   const handleKeyboardInput = (val: string) => {
     if (val === 'ENTER') {
-      if (!boardRows[currentRow].some(boardCell => boardCell.letter === '')) {
+      if (isRowFullyFilled(currentRow)) {
         let checkedRow = checkRow(boardRows[currentRow].map(cell => cell.letter).join(''), CORRECT_WORD);
         setRow(checkedRow, currentRow);
         moveToNextRow();
