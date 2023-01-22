@@ -7,7 +7,8 @@ const ROWS = 6;
 const COLUMNS = 5;
 export const EMPTY_CHAR = '_'
 
-export type CellState = 'WRONG' | 'MISPLACED' | 'CORRECT'
+export type CellState = 'UNCHECKED' | 'WRONG' | 'MISPLACED' | 'CORRECT'
+export type GameState = 'WON' | 'LOST' | 'INPROGRESS'
 
 type BoardCell = {
   char: string;
@@ -19,7 +20,7 @@ function getEmptyState(): BoardCell[][] {
   for (let i = 0; i < ROWS; i++) {
     s.push(new Array(COLUMNS).fill({
       char: EMPTY_CHAR,
-      state: 'WRONG'
+      state: 'UNCHECKED'
     }))
   }
   return s;
@@ -33,6 +34,15 @@ const Wordle = () => {
   const usedChars = useMemo(() => getUsedChars(), [currentRow]);
   const correctChars = useMemo(() => getCorrectChars(), [currentRow]);
   const misplacedChars = useMemo(() => getMisplacedChars(), [currentRow]);
+
+  // const gameState: GameState = 'INPROGRESS'
+
+  // function getGameState(): GameState {
+  //   if (boardRows.some(row => row.every(cell => cell.state === 'CORRECT'))) return 'WON'
+  //   if (currentRow === (ROWS - 1) && boardRows[currentRow].some(cell => cell.char === EMPTY_CHAR))
+  //     return 'INPROGRESS'
+  //   return 'INPROGRESS'
+  // }
 
   const handleKeyboardInput = (val: string) => {
     if (val === 'ENTER') {
@@ -107,7 +117,7 @@ const Wordle = () => {
   function handleBackspace() {
     let board = copyBoard(boardRows);
     let lastFilledColumnIndex = findLastIndex(board[currentRow], item => item.char !== EMPTY_CHAR)
-    board[currentRow][lastFilledColumnIndex] = { char: EMPTY_CHAR, state: "WRONG" };
+    board[currentRow][lastFilledColumnIndex] = { char: EMPTY_CHAR, state: "UNCHECKED" };
     setBoardRows(board);
   }
 
@@ -117,7 +127,7 @@ const Wordle = () => {
     if (lastFilledColumnIndex + 1 < COLUMNS) {
       board[currentRow][lastFilledColumnIndex + 1] = {
         char: char,
-        state: 'WRONG'
+        state: 'UNCHECKED'
       }
     }
     setBoardRows(board);

@@ -6,17 +6,15 @@ type CellProps = {
 }
 
 const Cell = (props: CellProps) => {
-  let tileState = props.state ?? "WRONG"
+  if (props.state === "UNCHECKED") {
+    if (props.char === EMPTY_CHAR) {
+      return (
+        <div className="w-12 h-12 border-2 flex justify-center items-center font-bold text-xl">
+          { }
+        </div>
+      )
+    }
 
-  if (props.char === EMPTY_CHAR) {
-    return (
-      <div className="w-12 h-12 border-2 flex justify-center items-center font-bold text-xl">
-        {""}
-      </div>
-    )
-  }
-
-  if (tileState === "WRONG") {
     return (
       <div className="w-12 h-12 border-2 border-slate-800 flex justify-center items-center font-bold text-xl">
         {props.char}
@@ -24,27 +22,33 @@ const Cell = (props: CellProps) => {
     )
   }
 
-  if (tileState === "MISPLACED") {
+  if (props.state === "WRONG") {
     return (
-      <div className="w-12 h-12 border-2 border-slate-800 flex justify-center items-center font-bold text-xl bg-yellow-300">
+      <div className="w-12 h-12  flex justify-center items-center font-bold text-xl bg-slate-500 text-white">
         {props.char}
       </div>
     )
   }
 
-  if (tileState === "CORRECT") {
+  if (props.state === "MISPLACED") {
     return (
-      <div className="w-12 h-12 border-2 border-slate-800 flex justify-center items-center font-bold text-xl bg-green-300">
+      <div className="w-12 h-12 flex justify-center items-center font-bold text-xl bg-yellow-500 text-white">
         {props.char}
       </div>
     )
   }
 
+  if (props.state === "CORRECT") {
+    return (
+      <div className="w-12 h-12 flex justify-center items-center font-bold text-xl bg-green-500 text-white">
+        {props.char}
+      </div>
+    )
+  }
 
-  console.log(props)
   return (
-    <div className="w-12 h-12 border-2 flex justify-center items-center font-bold text-x">
-      {props.char}
+    <div className="w-12 h-12 flex justify-center items-center font-bold text-x">
+      ERR
     </div>
   )
 
