@@ -35,14 +35,13 @@ const Wordle = () => {
   const correctChars = useMemo(() => getCorrectChars(), [currentRow]);
   const misplacedChars = useMemo(() => getMisplacedChars(), [currentRow]);
 
-  // const gameState: GameState = 'INPROGRESS'
+  const gameState: GameState = getGameState();
 
-  // function getGameState(): GameState {
-  //   if (boardRows.some(row => row.every(cell => cell.state === 'CORRECT'))) return 'WON'
-  //   if (currentRow === (ROWS - 1) && boardRows[currentRow].some(cell => cell.char === EMPTY_CHAR))
-  //     return 'INPROGRESS'
-  //   return 'INPROGRESS'
-  // }
+  function getGameState(): GameState {
+    if (boardRows.some(row => row.every(cell => cell.state === 'CORRECT'))) return 'WON'
+    if (boardRows.every(row => row.every(cell => cell.state !== 'UNCHECKED'))) return 'LOST'
+    return 'INPROGRESS'
+  }
 
   const handleKeyboardInput = (val: string) => {
     if (val === 'ENTER') {
