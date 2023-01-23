@@ -68,6 +68,11 @@ const Wordle = () => {
     }
   }, [handleKeyboardInput]);
 
+  function restart() {
+    setBoardRows(getEmptyState());
+    setCurrentPosition([0, 0])
+  }
+
   function copyBoard(boardRows: BoardCell[][]) {
     return boardRows.map(row => [...row])
   }
@@ -179,6 +184,12 @@ const Wordle = () => {
 
   return (
     <div className="flex flex-col items-center">
+      {gameState !== 'INPROGRESS' &&
+        <div className='h-20 p-2'>
+          <div>Gamestate: {gameState}</div>
+          <button className="p-2 bg-blue-500" onClick={restart}>Try again</button>
+        </div>
+      }
       <div className="w-84 grid grid-rows-6 gap-1">
         {boardRows.map((boardRow, rowIndex) => {
           return <div key={rowIndex} className="grid grid-cols-5 gap-1">
