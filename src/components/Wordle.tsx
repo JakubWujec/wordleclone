@@ -44,12 +44,14 @@ const Wordle = () => {
   }
 
   const handleKeyboardInput = (val: string) => {
-    if (val === 'ENTER') {
-      handleEnter();
-    } else if (val === 'BACKSPACE') {
-      handleBackspace();
-    } else if (val.length === 1 && val.match(/[A-Z]{1}/)) {
-      writeIfPossible(val as string);
+    if (gameState === 'INPROGRESS') {
+      if (val === 'ENTER') {
+        handleEnter();
+      } else if (val === 'BACKSPACE') {
+        handleBackspace();
+      } else if (val.length === 1 && val.match(/[A-Z]{1}/)) {
+        writeIfPossible(val as string);
+      }
     }
   }
 
