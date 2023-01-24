@@ -16,7 +16,7 @@ type BoardCell = {
   state: CellState
 }
 
-function getEmptyState(): BoardCell[][] {
+function getInitialBoardState(): BoardCell[][] {
   let s = [];
   for (let i = 0; i < ROWS; i++) {
     s.push(new Array(COLUMNS).fill({
@@ -29,7 +29,7 @@ function getEmptyState(): BoardCell[][] {
 
 const Wordle = () => {
   const CORRECT_WORD = 'POINT'
-  const [boardRows, setBoardRows] = useState<BoardCell[][]>(getEmptyState());
+  const [board, setBoard] = useState<BoardCell[][]>(getInitialBoardState());
   const [currentRow, setCurrentRow] = useState(0)
 
   const usedChars = useMemo(() => getUsedChars(), [currentRow]);
@@ -39,8 +39,8 @@ const Wordle = () => {
   const gameState: GameState = getGameState();
 
   function getGameState(): GameState {
-    if (boardRows.some(row => row.every(cell => cell.state === 'CORRECT'))) return 'WON'
-    if (boardRows.every(row => row.every(cell => cell.state !== 'UNCHECKED'))) return 'LOST'
+    if (board.some(row => row.every(cell => cell.state === 'CORRECT'))) return 'WON'
+    if (board.every(row => row.every(cell => cell.state !== 'UNCHECKED'))) return 'LOST'
     return 'INPROGRESS'
   }
 
@@ -70,7 +70,7 @@ const Wordle = () => {
   }, [handleKeyboardInput]);
 
   function restart() {
-    setBoardRows(getEmptyState());
+    setBoard(getInitialBoardState());
     setCurrentRow(0)
   }
 
@@ -79,25 +79,25 @@ const Wordle = () => {
   }
 
   function isRowFullyFilled(rowIndex: number) {
-    return !boardRows[rowIndex].some(boardCell => boardCell.char === EMPTY_CHAR)
+    return !board[rowIndex].some(boardCell => boardCell.char === EMPTY_CHAR)
   }
 
   function getUsedChars() {
-    let usedChars = boardRows.reduce((acc, currentRow) => {
+    let usedChars = board.reduce((acc, currentRow) => {
       return acc + currentRow.map(cell => cell.char).filter(char => char !== EMPTY_CHAR).join('')
     }, '')
     return new Set(usedChars);
   }
 
   function getCorrectChars() {
-    let correctChars = boardRows.reduce((acc, currentRow) => {
+    let correctChars = board.reduce((acc, currentRow) => {
       return acc + currentRow.filter(cell => cell.state === 'CORRECT').map(cell => cell.char).filter(char => char !== EMPTY_CHAR).join('')
     }, '')
     return new Set(correctChars)
   }
 
   function getMisplacedChars() {
-    let misplacedChars = boardRows.reduce((acc, currentRow) => {
+    let misplacedChars = board.reduce((acc, currentRow) => {
       return acc + currentRow.filter(cell => cell.state === 'MISPLACED').map(cell => cell.char).filter(char => char !== EMPTY_CHAR).join('')
     }, '')
     console.log(misplacedChars, correctChars, new Set([...misplacedChars].filter((char) => !getCorrectChars().has(char))))
@@ -113,31 +113,31 @@ const Wordle = () => {
 
   function handleEnter() {
     if (isRowFullyFilled(currentRow)) {
-      let board = copyBoard(boardRows);
-      let checkedRow = checkRow(board[currentRow].map(cell => cell.char).join(''), CORRECT_WORD);
-      board[currentRow] = checkedRow;
-      setBoardRows(board);
+      let boardCopy = copyBoard(board);
+      let checkedRow = checkRow(boardCopy[currentRow].map(cell => cell.char).join(''), CORRECT_WORD);
+      boardCopy[currentRow] = checkedRow;
+      setBoard(boardCopy);
       moveToNextRow();
     }
   }
 
   function handleBackspace() {
-    let board = copyBoard(boardRows);
-    let lastFilledColumnIndex = findLastIndex(board[currentRow], item => item.char !== EMPTY_CHAR)
-    board[currentRow][lastFilledColumnIndex] = { char: EMPTY_CHAR, state: "UNCHECKED" };
-    setBoardRows(board);
+    let boardCopy = copyBoard(board);
+    let lastFilledColumnIndex = findLastIndex(boardCopy[currentRow], item => item.char !== EMPTY_CHAR)
+    boardCopy[currentRow][lastFilledColumnIndex] = { char: EMPTY_CHAR, state: "UNCHECKED" };
+    setBoard(boardCopy);
   }
 
   function writeIfPossible(char: string) {
-    let board = copyBoard(boardRows);
-    let lastFilledColumnIndex = findLastIndex(board[currentRow], item => item.char !== EMPTY_CHAR)
+    let boardCopy = copyBoard(board);
+    let lastFilledColumnIndex = findLastIndex(boardCopy[currentRow], item => item.char !== EMPTY_CHAR)
     if (lastFilledColumnIndex + 1 < COLUMNS) {
-      board[currentRow][lastFilledColumnIndex + 1] = {
+      boardCopy[currentRow][lastFilledColumnIndex + 1] = {
         char: char,
         state: 'UNCHECKED'
       }
     }
-    setBoardRows(board);
+    setBoard(boardCopy);
   }
 
   function checkRow(guess: string, correct: string): BoardCell[] {
@@ -186,7 +186,7 @@ const Wordle = () => {
   return (
     <div className="flex flex-col items-center">
       <EndGame restart={restart} gameState={gameState}></EndGame>
-      <Board boardRows={boardRows}></Board>
+      <Board board={board}></Board>
       <Keyboard onClick={keyboardClickHandler} misplacedChars={misplacedChars} usedChars={usedChars} correctChars={correctChars}></Keyboard>
     </div>
   )
