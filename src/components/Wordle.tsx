@@ -29,7 +29,7 @@ function getEmptyState(): BoardCell[][] {
 const Wordle = () => {
   const CORRECT_WORD = 'POINT'
   const [boardRows, setBoardRows] = useState<BoardCell[][]>(getEmptyState());
-  const [[currentRow, currentColumn], setCurrentPosition] = useState([0, 0])
+  const [currentRow, setCurrentRow] = useState(0)
 
   const usedChars = useMemo(() => getUsedChars(), [currentRow]);
   const correctChars = useMemo(() => getCorrectChars(), [currentRow]);
@@ -70,7 +70,7 @@ const Wordle = () => {
 
   function restart() {
     setBoardRows(getEmptyState());
-    setCurrentPosition([0, 0])
+    setCurrentRow(0)
   }
 
   function copyBoard(boardRows: BoardCell[][]) {
@@ -106,7 +106,7 @@ const Wordle = () => {
 
   function moveToNextRow() {
     if (currentRow + 1 < ROWS) {
-      setCurrentPosition([currentRow + 1, 0])
+      setCurrentRow(old => old + 1)
     }
   }
 
