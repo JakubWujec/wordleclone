@@ -1,4 +1,4 @@
-import { CellState, EMPTY_CHAR } from "../Wordle";
+import { CellState, EMPTY_CHAR } from "./Wordle";
 
 type CellProps = {
   char: string;

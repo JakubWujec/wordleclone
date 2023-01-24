@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react"
 import { findLastIndex } from "../utils/utils";
 import Keyboard from "./Keyboard";
-import Cell from "./Tiles/Tile";
+import Cell from "./Cell";
 
 const ROWS = 6;
 const COLUMNS = 5;
