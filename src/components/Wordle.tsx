@@ -186,7 +186,7 @@ const Wordle = () => {
     <div className="flex flex-col items-center">
       {gameState !== 'INPROGRESS' &&
         <div className='h-20 p-2'>
-          <div>Gamestate: {gameState}</div>
+          <div>You {gameState}</div>
           <button className="p-2 bg-blue-500" onClick={restart}>Try again</button>
         </div>
       }
