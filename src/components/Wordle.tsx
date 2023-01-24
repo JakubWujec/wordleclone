@@ -1,7 +1,8 @@
-import { useState, useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react";
 import { findLastIndex } from "../utils/utils";
+import Board from "./Board";
+import EndGame from "./EndGame";
 import Keyboard from "./Keyboard";
-import Cell from "./Cell";
 
 const ROWS = 6;
 const COLUMNS = 5;
@@ -184,21 +185,8 @@ const Wordle = () => {
 
   return (
     <div className="flex flex-col items-center">
-      {gameState !== 'INPROGRESS' &&
-        <div className='h-20 p-2'>
-          <div>You {gameState}</div>
-          <button className="p-2 bg-blue-500" onClick={restart}>Try again</button>
-        </div>
-      }
-      <div className="w-84 grid grid-rows-6 gap-1">
-        {boardRows.map((boardRow, rowIndex) => {
-          return <div key={rowIndex} className="grid grid-cols-5 gap-1">
-            {boardRow.map((boardCell, columnIndex) => {
-              return <Cell state={boardCell.state} key={`${rowIndex}-${columnIndex}`} char={boardCell.char}></Cell>
-            })}
-          </div>
-        })}
-      </div>
+      <EndGame restart={restart} gameState={gameState}></EndGame>
+      <Board boardRows={boardRows}></Board>
       <Keyboard onClick={keyboardClickHandler} misplacedChars={misplacedChars} usedChars={usedChars} correctChars={correctChars}></Keyboard>
     </div>
   )
