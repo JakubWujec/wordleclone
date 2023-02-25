@@ -1,11 +1,8 @@
 import Cell from "./Cell";
-import { CellState } from "./Wordle";
+import { BoardCell } from "./Wordle";
 
 type BoardProps = {
-  board: {
-    char: string;
-    state: CellState
-  }[][]
+  board: BoardCell[][]
 }
 
 const Board = ({ board }: BoardProps) => {

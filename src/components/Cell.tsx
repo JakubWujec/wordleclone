@@ -1,11 +1,6 @@
-import { CellState, EMPTY_CHAR } from "./Wordle";
+import { CellState, EMPTY_CHAR, BoardCell } from "./Wordle";
 
-type CellProps = {
-  char: string;
-  state?: CellState
-}
-
-const Cell = (props: CellProps) => {
+const Cell = (props: BoardCell) => {
   if (props.state === "UNCHECKED") {
     if (props.char === EMPTY_CHAR) {
       return (

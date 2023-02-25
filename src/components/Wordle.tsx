@@ -11,7 +11,7 @@ export const EMPTY_CHAR = '_'
 export type CellState = 'UNCHECKED' | 'WRONG' | 'MISPLACED' | 'CORRECT'
 export type GameState = 'WON' | 'LOST' | 'INPROGRESS'
 
-type BoardCell = {
+export type BoardCell = {
   char: string;
   state: CellState
 }
