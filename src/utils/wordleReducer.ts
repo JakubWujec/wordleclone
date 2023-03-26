@@ -33,25 +33,39 @@ interface WordleAction {
 
 function wordleReducer(state: WordleReducerState, action: WordleAction) {
   const { type, payload } = action;
-  switch (type) {
-    case WordleActionKind.ADD_LETTER:
-      if (state.status === 'IN_PROGRESS' && !!action.payload.letter) {
+  {
+    switch (type) {
+      case WordleActionKind.ADD_LETTER: {
+        if (state.status === 'IN_PROGRESS' && !!action.payload.letter) {
+          let stateCopy = copyState(state);
+          writeIfPossible(stateCopy, action.payload.letter)
+          return stateCopy;
+        }
+        return {
+          ...state,
+        };
+      }
+      case WordleActionKind.REMOVE_LETTER: {
         let stateCopy = copyState(state);
-        writeIfPossible(stateCopy, action.payload.letter)
+        let currentRow = getCurrentRow(stateCopy);
+        let lastFilledColumnIndex = findLastIndex(currentRow, item => item !== WORDLE_EMPTY_CHAR)
+        currentRow[lastFilledColumnIndex + 1] = WORDLE_EMPTY_CHAR;
+        setCurrentRow(stateCopy, currentRow);
         return stateCopy;
       }
-      return {
-        ...state,
-      };
-    case WordleActionKind.REMOVE_LETTER:
-      let stateCopy = copyState(state);
-      let currentRow = getCurrentRow(stateCopy);
-      let lastFilledColumnIndex = findLastIndex(currentRow, item => item !== WORDLE_EMPTY_CHAR)
-      currentRow[lastFilledColumnIndex + 1] = WORDLE_EMPTY_CHAR;
-      setCurrentRow(stateCopy, currentRow);
-      return stateCopy;
-    default:
-      return state;
+
+      case WordleActionKind.ENTER_ROW: {
+        let stateCopy = copyState(state);
+        if (isCurrentRowFullyFilled(state)) {
+          stateCopy.currentRowIndex++;
+        }
+
+        return stateCopy;
+      }
+
+      default:
+        return state;
+    }
   }
 }
 
@@ -104,9 +118,8 @@ function setCurrentRow(state: WordleReducerState, row: string[]) {
   return;
 }
 
-function isRowFullyFilled(state: WordleReducerState, rowIndex: number) {
-  return false;
-  // return !state.board[rowIndex].some(boardCell => boardCell.char === EMPTY_CHAR)
+function isCurrentRowFullyFilled(state: WordleReducerState) {
+  return state.board[state.currentRowIndex].every(letter => letter != WORDLE_EMPTY_CHAR);
 }
 
 function writeIfPossible(state: WordleReducerState, char: string) {

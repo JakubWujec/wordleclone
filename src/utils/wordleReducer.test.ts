@@ -1,4 +1,4 @@
-import { wordleReducer, getInitialState, WordleActionKind, setCurrentRow, getCurrentRow } from "./wordleReducer";
+import { wordleReducer, getInitialState, WordleActionKind, setCurrentRow, getCurrentRow, WORDLE_EMPTY_CHAR } from "./wordleReducer";
 import { describe, expect, it } from 'vitest'
 import { EMPTY_CHAR } from "../components/Wordle";
 
@@ -48,7 +48,6 @@ describe("Wordle reducer testing", () => {
 
     it("Should remove last added letter", () => {
       let state = getInitialState();
-      console.log("S1", getCurrentRow(state))
       let addLetterAction = {
         type: WordleActionKind.ADD_LETTER,
         payload: {
@@ -57,14 +56,41 @@ describe("Wordle reducer testing", () => {
       }
       let newState = wordleReducer(state, addLetterAction)
       expect(getCurrentRow(newState)).not.to.equal(getCurrentRow(newState));
-      console.log("S2", getCurrentRow(newState))
+
       let removeLetterAction = {
         type: WordleActionKind.REMOVE_LETTER,
         payload: {}
       }
       newState = wordleReducer(state, removeLetterAction)
-      console.log("S3", getCurrentRow(newState), getCurrentRow(state))
+
       expect(getCurrentRow(newState)).toEqual(getCurrentRow(state));
+    })
+  })
+
+  describe("ENTER_ROW action testing", () => {
+    it("Should not change anything when currentRow is not full", () => {
+      let state = getInitialState();
+
+      let enterRowAction = {
+        type: WordleActionKind.ENTER_ROW,
+        payload: {}
+      }
+      let newState = wordleReducer(state, enterRowAction)
+      expect(newState).toEqual(state);
+    })
+
+    it("Should move to the next row when the current row is full and next row exist", () => {
+      let state = getInitialState();
+      setCurrentRow(state, [...'ABCDE']);
+      let enterRowAction = {
+        type: WordleActionKind.ENTER_ROW,
+        payload: {}
+      }
+
+      let newState = wordleReducer(state, enterRowAction)
+
+      expect(newState.currentRowIndex).toEqual(state.currentRowIndex + 1);
+      expect(getCurrentRow(newState).filter(x => x !== WORDLE_EMPTY_CHAR).length).toBe(0);
     })
   })
 
