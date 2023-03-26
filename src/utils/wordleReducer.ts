@@ -9,6 +9,8 @@ interface WordleReducerState {
   correctWord: string;
   currentRowIndex: number;
   status: 'WIN' | 'LOST' | 'IN_PROGRESS'
+  rows: number,
+  columns: number,
   usedChars: string[];
   correctChars: string[];
   misplacedChars: string[];
@@ -33,16 +35,21 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
   const { type, payload } = action;
   switch (type) {
     case WordleActionKind.ADD_LETTER:
-      if (state.status === 'IN_PROGRESS') {
-        writeIfPossible(state, action.payload.letter!)
+      if (state.status === 'IN_PROGRESS' && !!action.payload.letter) {
+        let stateCopy = copyState(state);
+        writeIfPossible(stateCopy, action.payload.letter)
+        return stateCopy;
       }
       return {
         ...state,
       };
     case WordleActionKind.REMOVE_LETTER:
-      return {
-        ...state,
-      };
+      let stateCopy = copyState(state);
+      let currentRow = getCurrentRow(stateCopy);
+      let lastFilledColumnIndex = findLastIndex(currentRow, item => item !== WORDLE_EMPTY_CHAR)
+      currentRow[lastFilledColumnIndex + 1] = WORDLE_EMPTY_CHAR;
+      setCurrentRow(stateCopy, currentRow);
+      return stateCopy;
     default:
       return state;
   }
@@ -50,6 +57,8 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
 
 function getInitialState(word?: string): WordleReducerState {
   let board: string[][] = [];
+  let rows = ROWS;
+  let columns = COLUMNS;
   for (let row = 0; row < ROWS; row++) {
     board.push([]);
     for (let column = 0; column < COLUMNS; column++) {
@@ -57,9 +66,10 @@ function getInitialState(word?: string): WordleReducerState {
     }
   }
 
-
   return {
-    board: [[]],
+    board: board,
+    rows,
+    columns,
     correctWord: word || 'POINT',
     currentRowIndex: 0,
     status: 'IN_PROGRESS',
@@ -73,8 +83,25 @@ function getCurrentRow(state: WordleReducerState) {
   return [...state.board[state.currentRowIndex]]
 }
 
+function copyState(state: WordleReducerState) {
+  return {
+    ...state,
+    board: copyBoard(state.board),
+    usedChars: [...state.usedChars],
+    correctChars: [...state.correctChars],
+    misplacedChars: [...state.misplacedChars],
+  }
+}
+
+function copyBoard(board: string[][]) {
+  return board.map(row => [...row])
+}
+
 function setCurrentRow(state: WordleReducerState, row: string[]) {
-  return state.board[state.currentRowIndex] = row;
+  let _copyBoard = copyBoard(state.board);
+  state.board = _copyBoard;
+  state.board[state.currentRowIndex] = [...row];
+  return;
 }
 
 function isRowFullyFilled(state: WordleReducerState, rowIndex: number) {
@@ -91,11 +118,11 @@ function writeIfPossible(state: WordleReducerState, char: string) {
   }
 }
 
-
-
 export {
   wordleReducer,
   getInitialState,
+  setCurrentRow,
+  getCurrentRow,
   WordleActionKind,
   WORDLE_EMPTY_CHAR
 }
