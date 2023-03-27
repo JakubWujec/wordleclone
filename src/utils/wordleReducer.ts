@@ -19,11 +19,13 @@ interface WordleReducerState {
 enum WordleActionKind {
   ADD_LETTER = 'ADD_LETTER',
   REMOVE_LETTER = 'REMOVE_LETTER',
-  ENTER_ROW = 'ENTER_ROW'
+  ENTER_ROW = 'ENTER_ROW',
+  RESTART = 'RESTART'
 }
 
 interface WordleActionPayload {
   letter?: string;
+  word?: string;
 }
 
 interface WordleAction {
@@ -71,6 +73,10 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
         }
 
         return stateCopy;
+      }
+
+      case WordleActionKind.RESTART: {
+        return getInitialState(action.payload.word)
       }
 
       default:
