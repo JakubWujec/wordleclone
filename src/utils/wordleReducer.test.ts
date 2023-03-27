@@ -55,13 +55,13 @@ describe("Wordle reducer testing", () => {
         }
       }
       let newState = wordleReducer(state, addLetterAction)
-      expect(getCurrentRow(newState)).not.to.equal(getCurrentRow(newState));
+      expect(getCurrentRow(newState)).not.to.equal(getCurrentRow(state));
 
       let removeLetterAction = {
         type: WordleActionKind.REMOVE_LETTER,
         payload: {}
       }
-      newState = wordleReducer(state, removeLetterAction)
+      newState = wordleReducer(newState, removeLetterAction)
 
       expect(getCurrentRow(newState)).toEqual(getCurrentRow(state));
     })

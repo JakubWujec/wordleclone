@@ -49,8 +49,10 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
         let stateCopy = copyState(state);
         let currentRow = getCurrentRow(stateCopy);
         let lastFilledColumnIndex = findLastIndex(currentRow, item => item !== WORDLE_EMPTY_CHAR)
-        currentRow[lastFilledColumnIndex + 1] = WORDLE_EMPTY_CHAR;
-        setCurrentRow(stateCopy, currentRow);
+        if (lastFilledColumnIndex >= 0) {
+          currentRow[lastFilledColumnIndex] = WORDLE_EMPTY_CHAR;
+          setCurrentRow(stateCopy, currentRow);
+        }
         return stateCopy;
       }
 
