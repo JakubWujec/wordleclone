@@ -8,7 +8,7 @@ interface WordleReducerState {
   board: string[][];
   correctWord: string;
   currentRowIndex: number;
-  status: 'WIN' | 'LOST' | 'IN_PROGRESS'
+  status: 'WON' | 'LOST' | 'IN_PROGRESS'
   rows: number,
   columns: number,
   usedChars: string[];
@@ -56,8 +56,16 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
 
       case WordleActionKind.ENTER_ROW: {
         let stateCopy = copyState(state);
-        if (isCurrentRowFullyFilled(state)) {
-          stateCopy.currentRowIndex++;
+        let currentRow = getCurrentRow(stateCopy);
+        if (currentRow.join('') === stateCopy.correctWord) {
+          stateCopy.status = 'WON';
+
+        } else if (!isAtLastRow(stateCopy)) {
+          if (isCurrentRowFullyFilled(state)) {
+            stateCopy.currentRowIndex++;
+          }
+        } else {
+          stateCopy.status = 'LOST'
         }
 
         return stateCopy;
@@ -129,6 +137,10 @@ function writeIfPossible(state: WordleReducerState, char: string) {
     currentRow[lastFilledColumnIndex + 1] = char;
     setCurrentRow(state, currentRow);
   }
+}
+
+function isAtLastRow(state: WordleReducerState) {
+  return state.currentRowIndex === state.rows - 1;
 }
 
 export {

@@ -92,6 +92,21 @@ describe("Wordle reducer testing", () => {
       expect(newState.currentRowIndex).toEqual(state.currentRowIndex + 1);
       expect(getCurrentRow(newState).filter(x => x !== WORDLE_EMPTY_CHAR).length).toBe(0);
     })
+
+    it("Should end game when last row is entered", () => {
+      let state = getInitialState('HONOR');
+      let newState = state;
+      let enterRowAction = {
+        type: WordleActionKind.ENTER_ROW,
+        payload: {}
+      }
+      for (let i = 0; i < newState.rows; i++) {
+        setCurrentRow(newState, [...'ABCDE']);
+        newState = wordleReducer(newState, enterRowAction)
+      }
+      console.log(newState)
+      expect(newState.status).not.to.equal('IN_PROGRESS');
+    })
   })
 
 
