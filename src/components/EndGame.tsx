@@ -1,15 +1,13 @@
-import { GameState } from "./Wordle"
-
 type EndGameProps = {
-  gameState: GameState
+  gameStatus: 'WON' | 'LOST' | 'IN_PROGRESS'
   restart: () => void
 }
 
-const EndGame = ({ gameState, restart }: EndGameProps) => {
+const EndGame = ({ gameStatus, restart }: EndGameProps) => {
   return (<>
-    {gameState !== 'INPROGRESS' &&
+    {gameStatus !== 'IN_PROGRESS' &&
       <div className='h-20 p-2'>
-        <div>You {gameState}</div>
+        <div>You {gameStatus}</div>
         <button className="p-2 bg-blue-500" onClick={restart}>Try again</button>
       </div>
     }</>)

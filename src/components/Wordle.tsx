@@ -185,7 +185,7 @@ const Wordle = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <EndGame restart={restart} gameState={gameState}></EndGame>
+      <EndGame restart={handleRestart} gameStatus={wordleState.status}></EndGame>
       <Board board={board}></Board>
       <Keyboard onClick={keyboardClickHandler} misplacedChars={misplacedChars} usedChars={usedChars} correctChars={correctChars}></Keyboard>
     </div>
