@@ -10,9 +10,9 @@ const KeyboardRow = (props: KeyboardRowProps) => {
 
 type KeyboardProps = {
   onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
-  usedChars: Set<string>
-  correctChars: Set<string>
-  misplacedChars: Set<string>
+  usedChars: string[]
+  correctChars: string[]
+  misplacedChars: string[]
 }
 const Keyboard = (props: KeyboardProps) => {
   const keyboardRows = [
@@ -23,13 +23,13 @@ const Keyboard = (props: KeyboardProps) => {
 
 
   function getKeyColor(char: string) {
-    if (props.correctChars.has(char)) {
+    if (props.correctChars.includes(char)) {
       return 'bg-lime-500'
     }
-    if (props.misplacedChars.has(char)) {
+    if (props.misplacedChars.includes(char)) {
       return 'bg-yellow-300'
     }
-    if (props.usedChars.has(char)) {
+    if (props.usedChars.includes(char)) {
       return 'bg-slate-600'
     }
     return 'bg-slate-300'

@@ -1,8 +1,9 @@
-import { CellState, EMPTY_CHAR, BoardCell } from "./Wordle";
+import { WORDLE_EMPTY_CHAR } from "../utils/wordleReducer"
 
-const Cell = (props: BoardCell) => {
+
+const Cell = (props: any) => {
   if (props.state === "UNCHECKED") {
-    if (props.char === EMPTY_CHAR) {
+    if (props.char === WORDLE_EMPTY_CHAR) {
       return (
         <div className="select-none w-12 h-12 border-2 flex justify-center items-center font-bold text-xl">
           { }
@@ -43,7 +44,7 @@ const Cell = (props: BoardCell) => {
 
   return (
     <div className="select-none w-12 h-12 flex justify-center items-center font-bold text-x">
-      ERR
+      {props.char}
     </div>
   )
 
