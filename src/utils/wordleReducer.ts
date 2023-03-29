@@ -4,7 +4,7 @@ const WORDLE_EMPTY_CHAR = '_'
 const ROWS = 6;
 const COLUMNS = 5;
 
-interface c {
+interface WordleCell {
   char: string;
   status: 'UNCHECKED' | 'WRONG' | 'MISPLACED' | 'CORRECT'
 }
