@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState, useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import { wordleReducer, getInitialState, WordleActionKind } from "../utils/wordleReducer";
-import Board from "./Board";
+import Cell from "./Cell";
 import EndGame from "./EndGame";
 import Keyboard from "./Keyboard";
 
@@ -70,7 +70,17 @@ const Wordle = () => {
   return (
     <div className="flex flex-col items-center">
       <EndGame restart={handleRestart} gameStatus={wordleState.status}></EndGame>
-      <Board board={wordleState.board}></Board>
+      <div className="w-84 grid grid-rows-6 gap-1">
+        {wordleState.board.map((boardRow, rowIndex) => {
+          return <div key={rowIndex} className="grid grid-cols-5 gap-1">
+            {boardRow.map((wordleCell, columnIndex) => {
+              return (
+                <Cell wordleCell={wordleCell}></Cell>
+              )
+            })}
+          </div>
+        })}
+      </div>
       <Keyboard onClick={keyboardClickHandler} misplacedChars={wordleState.misplacedChars} usedChars={wordleState.usedChars} correctChars={wordleState.correctChars}></Keyboard>
     </div>
   )

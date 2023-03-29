@@ -66,15 +66,18 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
       case WordleActionKind.ENTER_ROW: {
         let stateCopy = copyState(state);
         let currentRow = getCurrentRow(stateCopy);
-        if (currentRow.map(cell => cell.char).join('') === stateCopy.correctWord) {
-          stateCopy.status = 'WON';
 
-        } else if (!isAtLastRow(stateCopy)) {
-          if (isCurrentRowFullyFilled(state)) {
+        if (isCurrentRowFullyFilled(state)) {
+          let guess = currentRow.map(cell => cell.char).join('');
+          setCurrentRow(stateCopy, checkRow(guess, state.correctWord))
+
+          if (guess === stateCopy.correctWord) {
+            stateCopy.status = 'WON';
+          } else if (!isAtLastRow(stateCopy)) {
             stateCopy.currentRowIndex++;
+          } else {
+            stateCopy.status = 'LOST'
           }
-        } else {
-          stateCopy.status = 'LOST'
         }
 
         return stateCopy;
@@ -154,6 +157,40 @@ function writeIfPossible(state: WordleReducerState, char: string) {
 
 function isAtLastRow(state: WordleReducerState) {
   return state.currentRowIndex === state.rows - 1;
+}
+
+function checkRow(guess: string, correct: string): WordleCell[] {
+  let indexToCharGuess = new Map<number, string>();
+  let indexToCharCorrect = new Map<number, string>();
+  let resultRow = guess.split('').map(char => { return { char, status: 'WRONG' } as WordleCell })
+  for (let index = 0; index < guess.length; index++) {
+    indexToCharCorrect.set(index, correct[index]);
+    indexToCharGuess.set(index, guess[index]);
+  }
+
+  // correct chars
+  for (let i = 0; i < guess.length; i++) {
+    if (guess[i] === correct[i]) {
+      resultRow[i].status = 'CORRECT'
+      indexToCharGuess.delete(i);
+      indexToCharCorrect.delete(i);
+    }
+  }
+  // misplaced
+  for (let [index, char] of indexToCharGuess.entries()) {
+    let index2ToDelete = null;
+    for (let [index2, char2] of indexToCharCorrect.entries()) {
+      if (char === char2) {
+        resultRow[index].status = 'MISPLACED';
+        index2ToDelete = index2
+        break;
+      }
+    }
+    if (index2ToDelete !== null) {
+      indexToCharCorrect.delete(index2ToDelete);
+    }
+  }
+  return resultRow;
 }
 
 export {

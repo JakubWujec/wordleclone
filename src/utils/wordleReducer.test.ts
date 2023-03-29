@@ -128,6 +128,7 @@ describe("Wordle reducer testing", () => {
       newState = wordleReducer(newState, enterRowAction)
 
       expect(newState.status).to.equal('WON');
+      expect(newState.board[newState.currentRowIndex].map(cell => cell.status).every(status => status === 'CORRECT')).toBe(true);
 
     })
   })
