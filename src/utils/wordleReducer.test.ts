@@ -110,6 +110,26 @@ describe("Wordle reducer testing", () => {
       }
       expect(newState.status).not.to.equal('IN_PROGRESS');
     })
+
+    it("Should end game when correct word is entered", () => {
+      let state = getInitialState('HONOR');
+      let newState = state;
+      let enterRowAction = {
+        type: WordleActionKind.ENTER_ROW,
+        payload: {}
+      }
+
+      setCurrentRow(newState, makeUncheckedRow('ABCDE'));
+      newState = wordleReducer(newState, enterRowAction)
+
+      expect(newState.status).to.equal('IN_PROGRESS');
+
+      setCurrentRow(newState, makeUncheckedRow('HONOR'));
+      newState = wordleReducer(newState, enterRowAction)
+
+      expect(newState.status).to.equal('WON');
+
+    })
   })
 
 
