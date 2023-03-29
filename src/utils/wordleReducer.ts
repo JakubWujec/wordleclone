@@ -4,8 +4,13 @@ const WORDLE_EMPTY_CHAR = '_'
 const ROWS = 6;
 const COLUMNS = 5;
 
+interface c {
+  char: string;
+  status: 'UNCHECKED' | 'WRONG' | 'MISPLACED' | 'CORRECT'
+}
+
 interface WordleReducerState {
-  board: string[][];
+  board: WordleCell[][];
   correctWord: string;
   currentRowIndex: number;
   status: 'WON' | 'LOST' | 'IN_PROGRESS'
@@ -50,9 +55,9 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
       case WordleActionKind.REMOVE_LETTER: {
         let stateCopy = copyState(state);
         let currentRow = getCurrentRow(stateCopy);
-        let lastFilledColumnIndex = findLastIndex(currentRow, item => item !== WORDLE_EMPTY_CHAR)
+        let lastFilledColumnIndex = findLastIndex(currentRow, item => item.char !== WORDLE_EMPTY_CHAR)
         if (lastFilledColumnIndex >= 0) {
-          currentRow[lastFilledColumnIndex] = WORDLE_EMPTY_CHAR;
+          currentRow[lastFilledColumnIndex] = { char: WORDLE_EMPTY_CHAR, status: 'UNCHECKED' };
           setCurrentRow(stateCopy, currentRow);
         }
         return stateCopy;
@@ -61,7 +66,7 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
       case WordleActionKind.ENTER_ROW: {
         let stateCopy = copyState(state);
         let currentRow = getCurrentRow(stateCopy);
-        if (currentRow.join('') === stateCopy.correctWord) {
+        if (currentRow.map(cell => cell.char).join('') === stateCopy.correctWord) {
           stateCopy.status = 'WON';
 
         } else if (!isAtLastRow(stateCopy)) {
@@ -86,13 +91,13 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
 }
 
 function getInitialState(word?: string): WordleReducerState {
-  let board: string[][] = [];
+  let board: WordleCell[][] = [];
   let rows = ROWS;
   let columns = COLUMNS;
   for (let row = 0; row < ROWS; row++) {
     board.push([]);
     for (let column = 0; column < COLUMNS; column++) {
-      board[row].push(WORDLE_EMPTY_CHAR);
+      board[row].push({ char: WORDLE_EMPTY_CHAR, status: 'UNCHECKED' });
     }
   }
 
@@ -123,11 +128,11 @@ function copyState(state: WordleReducerState) {
   }
 }
 
-function copyBoard(board: string[][]) {
+function copyBoard(board: WordleCell[][]) {
   return board.map(row => [...row])
 }
 
-function setCurrentRow(state: WordleReducerState, row: string[]) {
+function setCurrentRow(state: WordleReducerState, row: WordleCell[]) {
   let _copyBoard = copyBoard(state.board);
   state.board = _copyBoard;
   state.board[state.currentRowIndex] = [...row];
@@ -135,14 +140,14 @@ function setCurrentRow(state: WordleReducerState, row: string[]) {
 }
 
 function isCurrentRowFullyFilled(state: WordleReducerState) {
-  return state.board[state.currentRowIndex].every(letter => letter != WORDLE_EMPTY_CHAR);
+  return state.board[state.currentRowIndex].every(cell => cell.char != WORDLE_EMPTY_CHAR);
 }
 
 function writeIfPossible(state: WordleReducerState, char: string) {
   let currentRow = getCurrentRow(state);
-  let lastFilledColumnIndex = findLastIndex(currentRow, item => item !== WORDLE_EMPTY_CHAR)
+  let lastFilledColumnIndex = findLastIndex(currentRow, cell => cell.char !== WORDLE_EMPTY_CHAR)
   if (lastFilledColumnIndex + 1 < COLUMNS) {
-    currentRow[lastFilledColumnIndex + 1] = char;
+    currentRow[lastFilledColumnIndex + 1] = { char, status: 'UNCHECKED' };
     setCurrentRow(state, currentRow);
   }
 }
@@ -156,6 +161,6 @@ export {
   getInitialState,
   setCurrentRow,
   getCurrentRow,
-  WordleActionKind,
-  WORDLE_EMPTY_CHAR
-}
+  WordleActionKind, WORDLE_EMPTY_CHAR
+}; export type { WordleCell };
+

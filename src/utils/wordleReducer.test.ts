@@ -1,11 +1,14 @@
-import { wordleReducer, getInitialState, WordleActionKind, setCurrentRow, getCurrentRow, WORDLE_EMPTY_CHAR } from "./wordleReducer";
+import { wordleReducer, getInitialState, WordleActionKind, setCurrentRow, getCurrentRow, WORDLE_EMPTY_CHAR, WordleCell } from "./wordleReducer";
 import { describe, expect, it } from 'vitest'
-import { EMPTY_CHAR } from "../components/Wordle";
+
+function makeUncheckedRow(chars: string): WordleCell[] {
+  return [...chars].map(char => { return { char, status: "UNCHECKED" } });
+}
 
 describe("Wordle reducer testing", () => {
 
   describe("ADD_LETTER action testing", () => {
-    it('Should at letter and (0,0) when dispatching ADD_LETTER for the first time', () => {
+    it('Should add letter at (0,0) when dispatching ADD_LETTER for the first time', () => {
       let state = getInitialState();
       let addLetterAction = {
         type: WordleActionKind.ADD_LETTER,
@@ -14,11 +17,12 @@ describe("Wordle reducer testing", () => {
         }
       }
       let newState = wordleReducer(state, addLetterAction)
-      expect(newState.board[0][0]).toBe(addLetterAction.payload.letter);
+      expect(newState.board[0][0].char).toBe(addLetterAction.payload.letter);
     })
+
     it("Should not change anything when currentRow is full", () => {
       let state = getInitialState();
-      setCurrentRow(state, [...'ABCDE'])
+      setCurrentRow(state, makeUncheckedRow("ABCED"))
 
       let addLetterAction = {
         type: WordleActionKind.ADD_LETTER,
@@ -81,7 +85,7 @@ describe("Wordle reducer testing", () => {
 
     it("Should move to the next row when the current row is full and next row exist", () => {
       let state = getInitialState();
-      setCurrentRow(state, [...'ABCDE']);
+      setCurrentRow(state, makeUncheckedRow("ABCED"));
       let enterRowAction = {
         type: WordleActionKind.ENTER_ROW,
         payload: {}
@@ -90,7 +94,7 @@ describe("Wordle reducer testing", () => {
       let newState = wordleReducer(state, enterRowAction)
 
       expect(newState.currentRowIndex).toEqual(state.currentRowIndex + 1);
-      expect(getCurrentRow(newState).filter(x => x !== WORDLE_EMPTY_CHAR).length).toBe(0);
+      expect(getCurrentRow(newState).filter(cell => cell.char !== WORDLE_EMPTY_CHAR).length).toBe(0);
     })
 
     it("Should end game when last row is entered", () => {
@@ -101,10 +105,9 @@ describe("Wordle reducer testing", () => {
         payload: {}
       }
       for (let i = 0; i < newState.rows; i++) {
-        setCurrentRow(newState, [...'ABCDE']);
+        setCurrentRow(newState, makeUncheckedRow('ABCDE'));
         newState = wordleReducer(newState, enterRowAction)
       }
-      console.log(newState)
       expect(newState.status).not.to.equal('IN_PROGRESS');
     })
   })
