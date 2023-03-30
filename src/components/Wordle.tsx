@@ -6,7 +6,6 @@ import Keyboard from "./Keyboard";
 
 const Wordle = () => {
   const [wordleState, dispatch] = useReducer(wordleReducer, getInitialState('POINT'));
-
   const handleKeyboardInput = (val: string) => {
     if (wordleState.status === 'IN_PROGRESS') {
       if (val === 'ENTER') {
@@ -49,9 +48,7 @@ const Wordle = () => {
   function handleRestart() {
     dispatch({
       type: WordleActionKind.RESTART,
-      payload: {
-        word: 'POINT'
-      }
+      payload: {}
     })
   }
 

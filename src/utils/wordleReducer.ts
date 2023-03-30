@@ -1,5 +1,5 @@
 import { findLastIndex } from "./utils";
-
+import { POSSIBLE_CORRECT_WORDS } from "./words";
 const WORDLE_EMPTY_CHAR = '_'
 const ROWS = 6;
 const COLUMNS = 5;
@@ -84,7 +84,8 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
       }
 
       case WordleActionKind.RESTART: {
-        return getInitialState(action.payload.word)
+        let correctWord = action.payload.word ?? POSSIBLE_CORRECT_WORDS[Math.floor(Math.random() * POSSIBLE_CORRECT_WORDS.length)]
+        return getInitialState(correctWord)
       }
 
       default:
