@@ -22,7 +22,7 @@ interface WordleReducerState {
   usedChars: string[];
   correctChars: string[];
   misplacedChars: string[];
-  charToWordleCell: Map<string, WordleCell>
+  charToCharStatus: Map<string, CharStatus>
 }
 
 enum WordleActionKind {
@@ -78,7 +78,7 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
           stateCopy.usedChars = getUsedChars(stateCopy);
           stateCopy.correctChars = getCorrectChars(stateCopy);
           stateCopy.misplacedChars = getMisplacedChars(stateCopy);
-          stateCopy.charToWordleCell = makeCharToWordleCell(stateCopy);
+          stateCopy.charToCharStatus = makeCharToWordleCell(stateCopy);
 
           if (guess === stateCopy.correctWord) {
             stateCopy.status = 'WON';
@@ -114,9 +114,9 @@ function getInitialState(word?: string): WordleReducerState {
     }
   }
 
-  let charToWordleCell = new Map<string, WordleCell>();
+  let charToCharStatus = new Map<string, CharStatus>();
   for (let char of 'abcdefghijklmnopqrstuvwxyz') {
-    charToWordleCell.set(char, { char, status: 'UNCHECKED' });
+    charToCharStatus.set(char, 'UNCHECKED');
   }
 
   return {
@@ -129,7 +129,7 @@ function getInitialState(word?: string): WordleReducerState {
     usedChars: [],
     correctChars: [],
     misplacedChars: [],
-    charToWordleCell,
+    charToCharStatus: charToCharStatus,
   }
 }
 
@@ -236,21 +236,21 @@ function getMisplacedChars(state: WordleReducerState) {
 }
 
 function makeCharToWordleCell(state: WordleReducerState) {
-  let charToWordleCell = new Map<string, WordleCell>();
+  let charToCharStatus = new Map<string, CharStatus>();
   for (let char of 'abcdefghijklmnopqrstuvwxyz') {
-    charToWordleCell.set(char, { char, status: 'UNCHECKED' });
+    charToCharStatus.set(char, 'UNCHECKED');
   }
 
   for (let char of getUsedChars(state)) {
-    charToWordleCell.set(char, { char, status: 'WRONG' })
+    charToCharStatus.set(char, 'WRONG')
   }
   for (let char of getCorrectChars(state)) {
-    charToWordleCell.set(char, { char, status: 'CORRECT' })
+    charToCharStatus.set(char, 'CORRECT')
   }
   for (let char of getMisplacedChars(state)) {
-    charToWordleCell.set(char, { char, status: 'MISPLACED' })
+    charToCharStatus.set(char, 'MISPLACED')
   }
-  return charToWordleCell;
+  return charToCharStatus;
 }
 
 export {
@@ -259,5 +259,5 @@ export {
   setCurrentRow,
   getCurrentRow,
   WordleActionKind, WORDLE_EMPTY_CHAR
-}; export type { WordleCell };
+}; export type { WordleCell, CharStatus };
 

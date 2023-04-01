@@ -1,4 +1,4 @@
-import { WordleCell } from "../utils/wordleReducer"
+import { CharStatus } from "../utils/wordleReducer"
 
 type KeyboardRowProps = {
   children: any
@@ -12,7 +12,7 @@ const KeyboardRow = (props: KeyboardRowProps) => {
 
 type KeyboardProps = {
   onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
-  charToWordleCell: Map<string, WordleCell>;
+  charToCharStatus: Map<string, CharStatus>;
 }
 const Keyboard = (props: KeyboardProps) => {
   const keyboardRows = [
@@ -23,7 +23,7 @@ const Keyboard = (props: KeyboardProps) => {
 
 
   function getKeyColor(char: string) {
-    let charStatus = props.charToWordleCell.get(char)?.status;
+    let charStatus = props.charToCharStatus.get(char);
     if (charStatus === 'CORRECT') {
       return 'bg-lime-500'
     }
