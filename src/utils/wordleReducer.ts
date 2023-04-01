@@ -71,6 +71,10 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
           let guess = currentRow.map(cell => cell.char).join('');
           setCurrentRow(stateCopy, checkRow(guess, state.correctWord))
 
+          stateCopy.usedChars = getUsedChars(stateCopy);
+          stateCopy.correctChars = getCorrectChars(stateCopy);
+          stateCopy.misplacedChars = getMisplacedChars(stateCopy);
+
           if (guess === stateCopy.correctWord) {
             stateCopy.status = 'WON';
           } else if (!isAtLastRow(stateCopy)) {
@@ -192,6 +196,32 @@ function checkRow(guess: string, correct: string): WordleCell[] {
     }
   }
   return resultRow;
+}
+
+function getUsedChars(state: WordleReducerState) {
+  let usedChars = state.board.reduce((acc, row) => {
+    return acc + row.map(cell => cell.char).filter(char => char !== WORDLE_EMPTY_CHAR).join('')
+  }, '')
+  return [...new Set(usedChars)];
+}
+
+function getCorrectChars(state: WordleReducerState) {
+  let correctChars = state.board.reduce((acc, row) => {
+    return acc + row
+      .filter(cell => cell.status === 'CORRECT')
+      .map(cell => cell.char)
+      .filter(char => char !== WORDLE_EMPTY_CHAR)
+      .join('')
+  }, '')
+  return [...new Set(correctChars)]
+}
+
+function getMisplacedChars(state: WordleReducerState) {
+  let misplacedChars = state.board.reduce((acc, row) => {
+    return acc + row.filter(cell => cell.status === 'MISPLACED').map(cell => cell.char).filter(char => char !== WORDLE_EMPTY_CHAR).join('')
+  }, '')
+
+  return [...new Set([...misplacedChars].filter((char) => !getCorrectChars(state).includes(char)))]
 }
 
 export {
