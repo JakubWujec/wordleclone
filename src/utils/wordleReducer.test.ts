@@ -35,7 +35,6 @@ describe("Wordle reducer testing", () => {
     })
   })
 
-
   describe("REMOVE_LETTER action testing", () => {
     it("Should not change anything when currentRow is empty", () => {
       let state = getInitialState();
@@ -133,5 +132,31 @@ describe("Wordle reducer testing", () => {
     })
   })
 
+  describe("Char to charStatus", () => {
+    it('Every of 26 char should have UNCHECKED type at the beggining', () => {
+      let state = getInitialState();
+      expect([...state.charToCharStatus.values()].every(status => status === 'UNCHECKED')).toBe(true);
+      expect(state.charToCharStatus.size).toBe(26)
+    })
+
+    it('Every of 26 char should have UNCHECKED type at the beggining', () => {
+      let state = getInitialState('HONOR');
+
+      setCurrentRow(state, makeUncheckedRow("OWNOH"));
+      let enterRowAction = {
+        type: WordleActionKind.ENTER_ROW,
+        payload: {}
+      }
+
+      let newState = wordleReducer(state, enterRowAction)
+
+      expect(newState.charToCharStatus.get('O')).toEqual('CORRECT');
+      expect(newState.charToCharStatus.get('W')).toEqual('WRONG');
+      expect(newState.charToCharStatus.get('N')).toEqual('CORRECT');
+      expect(newState.charToCharStatus.get('H')).toEqual('MISPLACED');
+      expect(newState.charToCharStatus.get('Z')).toEqual('UNCHECKED');
+      expect(state.charToCharStatus.size).toBe(26)
+    })
+  })
 
 })

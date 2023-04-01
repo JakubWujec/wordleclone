@@ -131,7 +131,7 @@ function copyState(state: WordleReducerState) {
   return {
     ...state,
     board: copyBoard(state.board),
-    charToCharStatus: new Map(state.charToCharStatus);
+    charToCharStatus: new Map(state.charToCharStatus)
   }
 }
 
