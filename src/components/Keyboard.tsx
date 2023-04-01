@@ -1,3 +1,5 @@
+import { WordleCell } from "../utils/wordleReducer"
+
 type KeyboardRowProps = {
   children: any
 }
@@ -10,9 +12,7 @@ const KeyboardRow = (props: KeyboardRowProps) => {
 
 type KeyboardProps = {
   onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
-  usedChars: string[]
-  correctChars: string[]
-  misplacedChars: string[]
+  charToWordleCell: Map<string, WordleCell>;
 }
 const Keyboard = (props: KeyboardProps) => {
   const keyboardRows = [
@@ -23,13 +23,14 @@ const Keyboard = (props: KeyboardProps) => {
 
 
   function getKeyColor(char: string) {
-    if (props.correctChars.includes(char)) {
+    let charStatus = props.charToWordleCell.get(char)?.status;
+    if (charStatus === 'CORRECT') {
       return 'bg-lime-500'
     }
-    if (props.misplacedChars.includes(char)) {
+    if (charStatus === 'MISPLACED') {
       return 'bg-yellow-300'
     }
-    if (props.usedChars.includes(char)) {
+    if (charStatus === 'WRONG') {
       return 'bg-slate-600'
     }
     return 'bg-slate-300'

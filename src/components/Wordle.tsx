@@ -80,9 +80,7 @@ const Wordle = () => {
       </div>
       <Keyboard
         onClick={keyboardClickHandler}
-        misplacedChars={wordleState.misplacedChars}
-        usedChars={wordleState.usedChars}
-        correctChars={wordleState.correctChars}
+        charToWordleCell={wordleState.charToWordleCell}
       ></Keyboard>
     </div>
   )

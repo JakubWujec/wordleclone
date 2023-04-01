@@ -19,6 +19,7 @@ interface WordleReducerState {
   usedChars: string[];
   correctChars: string[];
   misplacedChars: string[];
+  charToWordleCell: Map<string, WordleCell>
 }
 
 enum WordleActionKind {
@@ -74,6 +75,7 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
           stateCopy.usedChars = getUsedChars(stateCopy);
           stateCopy.correctChars = getCorrectChars(stateCopy);
           stateCopy.misplacedChars = getMisplacedChars(stateCopy);
+          stateCopy.charToWordleCell = makeCharToWordleCell(stateCopy);
 
           if (guess === stateCopy.correctWord) {
             stateCopy.status = 'WON';
@@ -109,6 +111,11 @@ function getInitialState(word?: string): WordleReducerState {
     }
   }
 
+  let charToWordleCell = new Map<string, WordleCell>();
+  for (let char of 'abcdefghijklmnopqrstuvwxyz') {
+    charToWordleCell.set(char, { char, status: 'UNCHECKED' });
+  }
+
   return {
     board: board,
     rows,
@@ -119,6 +126,7 @@ function getInitialState(word?: string): WordleReducerState {
     usedChars: [],
     correctChars: [],
     misplacedChars: [],
+    charToWordleCell,
   }
 }
 
@@ -222,6 +230,24 @@ function getMisplacedChars(state: WordleReducerState) {
   }, '')
 
   return [...new Set([...misplacedChars].filter((char) => !getCorrectChars(state).includes(char)))]
+}
+
+function makeCharToWordleCell(state: WordleReducerState) {
+  let charToWordleCell = new Map<string, WordleCell>();
+  for (let char of 'abcdefghijklmnopqrstuvwxyz') {
+    charToWordleCell.set(char, { char, status: 'UNCHECKED' });
+  }
+
+  for (let char of getUsedChars(state)) {
+    charToWordleCell.set(char, { char, status: 'WRONG' })
+  }
+  for (let char of getCorrectChars(state)) {
+    charToWordleCell.set(char, { char, status: 'CORRECT' })
+  }
+  for (let char of getMisplacedChars(state)) {
+    charToWordleCell.set(char, { char, status: 'MISPLACED' })
+  }
+  return charToWordleCell;
 }
 
 export {
