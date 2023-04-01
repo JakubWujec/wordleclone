@@ -3,11 +3,12 @@ import { POSSIBLE_CORRECT_WORDS } from "./words";
 const WORDLE_EMPTY_CHAR = '_'
 const ROWS = 6;
 const COLUMNS = 5;
-
+const ALPHABET_CHARS_ARRAY = "abcdefghijklmnopqrstuvwxyz".toUpperCase().split('')
 interface WordleCell {
   char: string;
   status: CharStatus
 }
+
 
 type CharStatus = 'UNCHECKED' | 'WRONG' | 'MISPLACED' | 'CORRECT';
 type GameStatus = 'WON' | 'LOST' | 'IN_PROGRESS'
@@ -71,7 +72,7 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
         if (isCurrentRowFullyFilled(state)) {
           let guess = currentRow.map(cell => cell.char).join('');
           setCurrentRow(stateCopy, checkRow(guess, state.correctWord))
-          stateCopy.charToCharStatus = makeCharToWordleCell(stateCopy);
+          stateCopy.charToCharStatus = makeCharToCharStatus(stateCopy);
 
           if (guess === stateCopy.correctWord) {
             stateCopy.status = 'WON';
@@ -96,21 +97,22 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
   }
 }
 
-function getInitialState(word?: string): WordleReducerState {
+function makeEmptyBoard(rows: number, columns: number) {
   let board: WordleCell[][] = [];
-  let rows = ROWS;
-  let columns = COLUMNS;
-  for (let row = 0; row < ROWS; row++) {
+  for (let row = 0; row < rows; row++) {
     board.push([]);
-    for (let column = 0; column < COLUMNS; column++) {
+    for (let column = 0; column < columns; column++) {
       board[row].push({ char: WORDLE_EMPTY_CHAR, status: 'UNCHECKED' });
     }
   }
+  return board;
+}
 
-  let charToCharStatus = new Map<string, CharStatus>();
-  for (let char of 'abcdefghijklmnopqrstuvwxyz') {
-    charToCharStatus.set(char, 'UNCHECKED');
-  }
+function getInitialState(word?: string): WordleReducerState {
+  let rows = ROWS;
+  let columns = COLUMNS;
+  let board = makeEmptyBoard(rows, columns);
+  let charToCharStatus = getEmptyCharToCharStatus();
 
   return {
     board: board,
@@ -136,7 +138,16 @@ function copyState(state: WordleReducerState) {
 }
 
 function copyBoard(board: WordleCell[][]) {
-  return board.map(row => [...row])
+  let rows = board.length;
+  let columns = board[0].length;
+  let copyBoard = makeEmptyBoard(rows, columns);
+  for (let row = 0; row < rows; row++) {
+    for (let column = 0; column < columns; column++) {
+      copyBoard[row][column].char = board[row][column].char;
+      copyBoard[row][column].status = board[row][column].status;
+    }
+  }
+  return copyBoard;
 }
 
 function setCurrentRow(state: WordleReducerState, row: WordleCell[]) {
@@ -197,47 +208,29 @@ function checkRow(guess: string, correct: string): WordleCell[] {
   return resultRow;
 }
 
-function getUsedChars(state: WordleReducerState) {
-  let usedChars = state.board.reduce((acc, row) => {
-    return acc + row.map(cell => cell.char).filter(char => char !== WORDLE_EMPTY_CHAR).join('')
-  }, '')
-  return [...new Set(usedChars)];
-}
-
-function getCorrectChars(state: WordleReducerState) {
-  let correctChars = state.board.reduce((acc, row) => {
-    return acc + row
-      .filter(cell => cell.status === 'CORRECT')
-      .map(cell => cell.char)
-      .filter(char => char !== WORDLE_EMPTY_CHAR)
-      .join('')
-  }, '')
-  return [...new Set(correctChars)]
-}
-
-function getMisplacedChars(state: WordleReducerState) {
-  let misplacedChars = state.board.reduce((acc, row) => {
-    return acc + row.filter(cell => cell.status === 'MISPLACED').map(cell => cell.char).filter(char => char !== WORDLE_EMPTY_CHAR).join('')
-  }, '')
-
-  return [...new Set([...misplacedChars].filter((char) => !getCorrectChars(state).includes(char)))]
-}
-
-function makeCharToWordleCell(state: WordleReducerState) {
+function getEmptyCharToCharStatus() {
   let charToCharStatus = new Map<string, CharStatus>();
-  for (let char of 'abcdefghijklmnopqrstuvwxyz'.toUpperCase()) {
+  for (let char of ALPHABET_CHARS_ARRAY) {
     charToCharStatus.set(char, 'UNCHECKED');
   }
+  return charToCharStatus;
+}
 
-  for (let char of getUsedChars(state)) {
-    charToCharStatus.set(char, 'WRONG')
+function makeCharToCharStatus(state: WordleReducerState) {
+  let charToCharStatus = getEmptyCharToCharStatus();
+
+  for (let boardRow of state.board) {
+    for (let i = 0; i < boardRow.length; i++) {
+      charToCharStatus.set(boardRow[i].char, 'WRONG');
+
+      if (state.correctWord[i] === boardRow[i].char) {
+        charToCharStatus.set(boardRow[i].char, 'CORRECT');
+      } else if (state.correctWord.includes(boardRow[i].char) && charToCharStatus.get(boardRow[i].char) != 'CORRECT') {
+        charToCharStatus.set(boardRow[i].char, 'MISPLACED')
+      }
+    }
   }
-  for (let char of getCorrectChars(state)) {
-    charToCharStatus.set(char, 'CORRECT')
-  }
-  for (let char of getMisplacedChars(state)) {
-    charToCharStatus.set(char, 'MISPLACED')
-  }
+
   return charToCharStatus;
 }
 
