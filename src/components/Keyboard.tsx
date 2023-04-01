@@ -25,15 +25,15 @@ const Keyboard = (props: KeyboardProps) => {
   function getKeyColor(char: string) {
     let charStatus = props.charToCharStatus.get(char);
     if (charStatus === 'CORRECT') {
-      return 'bg-lime-500'
+      return 'bg-wordle-correct-color'
     }
     if (charStatus === 'MISPLACED') {
-      return 'bg-yellow-300'
+      return 'bg-wordle-misplaced-color'
     }
     if (charStatus === 'WRONG') {
-      return 'bg-slate-600'
+      return 'bg-wordle-wrong-color'
     }
-    return 'bg-slate-300'
+    return 'bg-wordle-unused-color'
   }
 
 

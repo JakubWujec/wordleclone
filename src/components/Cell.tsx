@@ -6,10 +6,10 @@ type CellProps = {
 }
 
 let extraClassName = {
-  CORRECT: 'bg-green-500 text-white',
-  MISPLACED: 'bg-yellow-500 text-white',
-  WRONG: 'bg-slate-500 text-white',
-  UNCHECKED: 'border-slate-800'
+  CORRECT: 'bg-wordle-correct-color text-white',
+  MISPLACED: 'bg-wordle-misplaced-color text-white',
+  WRONG: 'bg-wordle-wrong-color text-white',
+  UNCHECKED: 'bg-wordle-unchecked-color border-slate-800'
 }
 
 

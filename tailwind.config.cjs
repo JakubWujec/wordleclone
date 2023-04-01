@@ -5,7 +5,15 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'wordle-correct-color': '#65a30d',
+        'wordle-misplaced-color': '#eab308',
+        'wordle-wrong-color': '#6b7280',
+        'wordle-unchecked-color': '#ffffff',
+        'wordle-unused-color': '#D6D3D1',
+      },
+    },
   },
   plugins: [],
 }
