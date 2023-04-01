@@ -43,7 +43,7 @@ const Keyboard = (props: KeyboardProps) => {
         return <KeyboardRow key={index}>
           {keyboardRow.map(char => {
             const keyColor = getKeyColor(char)
-            return <button key={char} className={`p-4 m-1 ${keyColor}`} onClick={props.onClick} data-value={char}>{char}
+            return <button key={char} className={`p-4 m-1 font-bold ${keyColor}`} onClick={props.onClick} data-value={char}>{char}
             </button>
           })}
         </KeyboardRow>
