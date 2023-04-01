@@ -219,14 +219,21 @@ function getEmptyCharToCharStatus() {
 function makeCharToCharStatus(state: WordleReducerState) {
   let charToCharStatus = getEmptyCharToCharStatus();
 
-  for (let boardRow of state.board) {
-    for (let i = 0; i < boardRow.length; i++) {
-      charToCharStatus.set(boardRow[i].char, 'WRONG');
+  for (let row = 0; row < state.rows; row++) {
+    for (let column = 0; column < state.columns; column++) {
+      if (state.board[row].map(c => c.char).join('').includes(WORDLE_EMPTY_CHAR)) return charToCharStatus;
 
-      if (state.correctWord[i] === boardRow[i].char) {
-        charToCharStatus.set(boardRow[i].char, 'CORRECT');
-      } else if (state.correctWord.includes(boardRow[i].char) && charToCharStatus.get(boardRow[i].char) != 'CORRECT') {
-        charToCharStatus.set(boardRow[i].char, 'MISPLACED')
+      let currentChar = state.board[row][column].char;
+      let correctChar = state.correctWord[column];
+      if (correctChar === currentChar) {
+        charToCharStatus.set(currentChar, 'CORRECT');
+      }
+      if (charToCharStatus.get(currentChar) === 'CORRECT') continue;
+      if (correctChar !== currentChar) {
+        charToCharStatus.set(currentChar, 'WRONG');
+      }
+      if (state.correctWord.includes(currentChar)) {
+        charToCharStatus.set(currentChar, 'MISPLACED')
       }
     }
   }

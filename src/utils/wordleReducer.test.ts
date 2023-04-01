@@ -139,7 +139,7 @@ describe("Wordle reducer testing", () => {
       expect(state.charToCharStatus.size).toBe(26)
     })
 
-    it('Every of 26 char should have UNCHECKED type at the beggining', () => {
+    it('Set status correctly', () => {
       let state = getInitialState('HONOR');
 
       setCurrentRow(state, makeUncheckedRow("OWNOH"));
@@ -155,8 +155,32 @@ describe("Wordle reducer testing", () => {
       expect(newState.charToCharStatus.get('N')).toEqual('CORRECT');
       expect(newState.charToCharStatus.get('H')).toEqual('MISPLACED');
       expect(newState.charToCharStatus.get('Z')).toEqual('UNCHECKED');
-      expect(state.charToCharStatus.size).toBe(26)
+      expect(newState.charToCharStatus.size).toBe(26)
     })
+
+    it('Should not change status after it is set to CORRECT', () => {
+      let state = getInitialState('POINT');
+
+      setCurrentRow(state, makeUncheckedRow("PIONT"));
+      let enterRowAction = {
+        type: WordleActionKind.ENTER_ROW,
+        payload: {}
+      }
+      let newState = wordleReducer(state, enterRowAction)
+
+      expect(newState.charToCharStatus.get('P')).toEqual('CORRECT');
+
+      setCurrentRow(state, makeUncheckedRow("SAPER"));
+      let enterRowAction2 = {
+        type: WordleActionKind.ENTER_ROW,
+        payload: {}
+      }
+      newState = wordleReducer(newState, enterRowAction2)
+
+      expect(newState.charToCharStatus.get('P')).toEqual('CORRECT');
+
+    })
+
   })
 
 })
