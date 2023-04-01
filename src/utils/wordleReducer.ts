@@ -6,14 +6,17 @@ const COLUMNS = 5;
 
 interface WordleCell {
   char: string;
-  status: 'UNCHECKED' | 'WRONG' | 'MISPLACED' | 'CORRECT'
+  status: CharStatus
 }
+
+type CharStatus = 'UNCHECKED' | 'WRONG' | 'MISPLACED' | 'CORRECT';
+type GameStatus = 'WON' | 'LOST' | 'IN_PROGRESS'
 
 interface WordleReducerState {
   board: WordleCell[][];
   correctWord: string;
   currentRowIndex: number;
-  status: 'WON' | 'LOST' | 'IN_PROGRESS'
+  status: GameStatus
   rows: number,
   columns: number,
   usedChars: string[];
