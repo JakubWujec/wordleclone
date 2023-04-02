@@ -19,7 +19,7 @@ const Cell = ({ wordleCell }: CellProps) => {
   let classNameExtra = isEmpty ? '' : extraClassName[wordleCell.status]
   let text = isEmpty ? '' : wordleCell.char
 
-  return <div className={`select-none w-12 h-12 border-2 flex justify-center items-center font-bold text-xl ${classNameExtra}`}>
+  return <div className={`${isEmpty ? '' : 'animate-bump'} select-none w-12 h-12 border-2 flex justify-center items-center font-bold text-xl ${classNameExtra}`}>
     {text}
   </div>
 }

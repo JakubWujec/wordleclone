@@ -14,13 +14,13 @@ module.exports = {
         'wordle-unused-color': '#D6D3D1',
       },
       keyframes: {
-        wiggle: {
-          '0%, 100%': { transform: 'rotate(-3deg)' },
-          '50%': { transform: 'rotate(3deg)' },
+        bump: {
+          '0%, 100%': { transform: 'scaleY(1);' },
+          '50%': { transform: 'scaleY(1.2);' },
         }
       },
       animation: {
-        wiggle: 'wiggle 1s ease-in-out infinite',
+        bump: 'bump 0.25s ease-in-out',
       }
     },
   },
