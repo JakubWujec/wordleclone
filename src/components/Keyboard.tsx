@@ -1,15 +1,5 @@
 import { CharStatus } from "../utils/wordleReducer"
 
-type KeyboardRowProps = {
-  children: any
-}
-
-const KeyboardRow = (props: KeyboardRowProps) => {
-  return <div className="flex w-full h-full">
-    {props.children}
-  </div>
-}
-
 type KeyboardProps = {
   onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
   charToCharStatus: Map<string, CharStatus>;
@@ -40,7 +30,7 @@ const Keyboard = (props: KeyboardProps) => {
   return (
     <div className="w-full h-16">
       {keyboardRows.map((keyboardRow, index) => {
-        return <KeyboardRow key={index}>
+        return <div className="flex w-full h-full" key={index}>
           {keyboardRow.map(char => {
 
             const keyColor = getKeyColor(char)
@@ -48,7 +38,7 @@ const Keyboard = (props: KeyboardProps) => {
               {char === 'BACKSPACE' ? <BackspaceIcon></BackspaceIcon> : char}
             </button>
           })}
-        </KeyboardRow>
+        </div>
       })}
     </div>
   )
