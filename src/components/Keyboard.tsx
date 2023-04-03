@@ -27,15 +27,18 @@ const Keyboard = (props: KeyboardProps) => {
     return 'bg-wordle-unused-color'
   }
 
-
   return (
     <div className="w-full h-16">
       {keyboardRows.map((keyboardRow, index) => {
         return <div className="flex w-full h-full" key={index}>
           {keyboardRow.map(char => {
-
             const keyColor = getKeyColor(char)
-            return <button key={char} className={`flex-[1_1_0%]  m-1 font-bold place-content-center ${keyColor}`} onClick={props.onClick} data-value={char}>
+            return <button
+              key={char}
+              className={`flex-[1_1_0%]  m-1 font-bold place-content-center rounded ${keyColor}`}
+              onClick={props.onClick}
+              data-value={char}
+            >
               {char === 'BACKSPACE' ? <BackspaceIcon></BackspaceIcon> : char}
             </button>
           })}
