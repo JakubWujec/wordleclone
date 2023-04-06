@@ -13,7 +13,7 @@ const Wordle = () => {
       } else if (val === 'BACKSPACE') {
         handleBackspace();
       } else if (val.length === 1 && val.match(/[A-Z]{1}/)) {
-        writeIfPossible(val as string);
+        handleWrite(val as string);
       }
     }
   }
@@ -52,7 +52,7 @@ const Wordle = () => {
     })
   }
 
-  function writeIfPossible(char: string) {
+  function handleWrite(char: string) {
     dispatch({
       type: WordleActionKind.ADD_LETTER,
       payload: { letter: char }
