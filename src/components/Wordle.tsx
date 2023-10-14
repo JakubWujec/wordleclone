@@ -1,8 +1,8 @@
 import { useEffect, useReducer } from "react";
-import { wordleReducer, getInitialState, WordleActionKind } from "../utils/wordleReducer";
+import { wordleReducer, getInitialState, WordleActionKind, isCurrentRowFullyFilled } from "../utils/wordleReducer";
 import Cell from "./Cell";
-import EndGame from "./EndGame";
 import Keyboard from "./Keyboard";
+import toast from 'react-hot-toast';
 
 const Wordle = () => {
   const [wordleState, dispatch] = useReducer(wordleReducer, getInitialState('POINT'));
@@ -19,6 +19,15 @@ const Wordle = () => {
   }
 
   useEffect(() => {
+    if (wordleState.status === 'LOST') {
+      toast.dismiss();
+      toast(wordleState.correctWord, {
+        duration: Infinity
+      })
+    }
+  }, [wordleState.status])
+
+  useEffect(() => {
     function handleKeyDown(evt: KeyboardEvent) {
       handleKeyboardInput(evt.key.toUpperCase())
     }
@@ -32,10 +41,15 @@ const Wordle = () => {
   }, [handleKeyboardInput]);
 
   function handleEnter() {
-    dispatch({
-      type: WordleActionKind.ENTER_ROW,
-      payload: {}
-    })
+    if (!isCurrentRowFullyFilled(wordleState)) {
+      toast.dismiss();
+      toast("Not enough letters")
+    } else {
+      dispatch({
+        type: WordleActionKind.ENTER_ROW,
+        payload: {}
+      })
+    }
   }
 
   function handleBackspace() {
@@ -50,6 +64,8 @@ const Wordle = () => {
       type: WordleActionKind.RESTART,
       payload: {}
     })
+    toast.dismiss();
+
   }
 
   function handleWrite(char: string) {
@@ -66,7 +82,7 @@ const Wordle = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <EndGame restart={handleRestart} gameStatus={wordleState.status}></EndGame>
+      {wordleState.status === 'LOST' && <button className="mb-2 p-2 bg-blue-500" onClick={handleRestart}>Try again</button>}
       <div className="w-84 grid grid-rows-6 gap-1">
         {wordleState.board.map((boardRow, rowIndex) => {
           return <div key={rowIndex} className="grid grid-cols-5 gap-1">

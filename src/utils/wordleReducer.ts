@@ -246,6 +246,7 @@ export {
   getInitialState,
   setCurrentRow,
   getCurrentRow,
+  isCurrentRowFullyFilled,
   WordleActionType as WordleActionKind, WORDLE_EMPTY_CHAR
 }; export type { WordleCell, CharStatus };
 
