@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - gh_page
+      - master
 
 jobs:
   build:
@@ -33,7 +33,7 @@ jobs:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/gh_page'
+    if: github.ref == 'refs/heads/master'
 
     steps:
       - name: Download artifact
