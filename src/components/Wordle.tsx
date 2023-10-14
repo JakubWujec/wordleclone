@@ -81,8 +81,12 @@ const Wordle = () => {
   }
 
   const keyboardClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    let val = event.target.dataset.value;
-    handleKeyboardInput(val);
+    if (event.target instanceof HTMLElement) {
+      let val = event.target.dataset.value;
+      if (val) {
+        handleKeyboardInput(val);
+      }
+    }
   }
 
   return (
