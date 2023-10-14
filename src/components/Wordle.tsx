@@ -24,6 +24,11 @@ const Wordle = () => {
       toast(wordleState.correctWord, {
         duration: Infinity
       })
+    } else if (wordleState.status === 'WON') {
+      toast.dismiss();
+      toast("Good job!", {
+        duration: 3000
+      })
     }
   }, [wordleState.status])
 
@@ -82,8 +87,8 @@ const Wordle = () => {
 
   return (
     <div className="flex flex-col items-center">
-      {wordleState.status === 'LOST' && <button className="mb-2 p-2 bg-blue-500" onClick={handleRestart}>Try again</button>}
-      <div className="w-84 grid grid-rows-6 gap-1">
+      {(wordleState.status === "LOST" || wordleState.status === 'WON') && <button className="mb-2 p-2 bg-blue-500" onClick={handleRestart}>Try again</button>}
+      <div className="w-84 mb-4 grid grid-rows-6 gap-1">
         {wordleState.board.map((boardRow, rowIndex) => {
           return <div key={rowIndex} className="grid grid-cols-5 gap-1">
             {boardRow.map((wordleCell, columnIndex) => {
