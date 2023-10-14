@@ -23,7 +23,7 @@ interface WordleReducerState {
   charToCharStatus: Map<string, CharStatus>
 }
 
-enum WordleActionKind {
+enum WordleActionType {
   ADD_LETTER = 'ADD_LETTER',
   REMOVE_LETTER = 'REMOVE_LETTER',
   ENTER_ROW = 'ENTER_ROW',
@@ -36,7 +36,7 @@ interface WordleActionPayload {
 }
 
 interface WordleAction {
-  type: WordleActionKind;
+  type: WordleActionType;
   payload: WordleActionPayload;
 }
 
@@ -44,7 +44,7 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
   const { type, payload } = action;
   {
     switch (type) {
-      case WordleActionKind.ADD_LETTER: {
+      case WordleActionType.ADD_LETTER: {
         if (state.status === 'IN_PROGRESS' && !!action.payload.letter) {
           let stateCopy = copyState(state);
           writeIfPossible(stateCopy, action.payload.letter)
@@ -54,7 +54,7 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
           ...state,
         };
       }
-      case WordleActionKind.REMOVE_LETTER: {
+      case WordleActionType.REMOVE_LETTER: {
         let stateCopy = copyState(state);
         let currentRow = getCurrentRow(stateCopy);
         let lastFilledColumnIndex = findLastIndex(currentRow, item => item.char !== WORDLE_EMPTY_CHAR)
@@ -65,7 +65,7 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
         return stateCopy;
       }
 
-      case WordleActionKind.ENTER_ROW: {
+      case WordleActionType.ENTER_ROW: {
         let stateCopy = copyState(state);
         let currentRow = getCurrentRow(stateCopy);
 
@@ -86,7 +86,7 @@ function wordleReducer(state: WordleReducerState, action: WordleAction) {
         return stateCopy;
       }
 
-      case WordleActionKind.RESTART: {
+      case WordleActionType.RESTART: {
         let correctWord = action.payload.word ?? POSSIBLE_CORRECT_WORDS[Math.floor(Math.random() * POSSIBLE_CORRECT_WORDS.length)]
         return getInitialState(correctWord)
       }
@@ -246,6 +246,6 @@ export {
   getInitialState,
   setCurrentRow,
   getCurrentRow,
-  WordleActionKind, WORDLE_EMPTY_CHAR
+  WordleActionType as WordleActionKind, WORDLE_EMPTY_CHAR
 }; export type { WordleCell, CharStatus };
 
